@@ -1,0 +1,27 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: ubuntu-14.04
+    driver_config:
+      image: ubuntu:14.04
+      platform: ubuntu
+  - name: ubuntu-16.04
+    driver_config:
+      image: ubuntu:16.04
+      platform: ubuntu
+  - name: centos-7.2
+    driver_config:
+      image: centos:7.2.1511
+      platform: centos
+
+suites:
+  - name: default
+    run_list:
+      - recipe[pio::default]
+    attributes:
