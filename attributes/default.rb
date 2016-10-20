@@ -4,6 +4,7 @@ default['pio']['install_method'] = 'git'
 default['pio']['databasedir'] = '/opt/data'
 default['pio']['homedir'] = '/usr/local/pio'
 default['pio']['datadir'] = "#{File.join(node['pio']['databasedir'], 'pio')}"
+default['pio']['distdir'] = "#{File.join(node['pio']['datadir'], 'dist')}"
 default['pio']['user'] = 'aml'
 
 default['pio']['eventserver']['port'] = 31729

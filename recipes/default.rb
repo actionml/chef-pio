@@ -15,3 +15,4 @@ include_recipe 'java::default'
 include_recipe 'pio::user'
 include_recipe "pio::install_#{node['pio']['install_method']}"
 include_recipe 'pio::conf'
+include_recipe 'pio::hadoop'

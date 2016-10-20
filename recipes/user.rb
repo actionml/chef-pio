@@ -25,8 +25,10 @@ end
 
 # data base directroy (/opt/data)
 directory node['pio']['databasedir'] do
-  action :create
+  recursive true
   not_if { node['pio']['databasedir'] == '/' }
+
+  action :create
 end
 
 # pio data dir (/opt/data/pio)
@@ -34,6 +36,11 @@ directory node['pio']['datadir'] do
   owner node['pio']['user']
   group node['pio']['user']
   mode '0755'
+  action :create
+end
+
+# pio dist directory
+directory File.join(node['pio']['datadir'], 'dist') do
   action :create
 end
 
