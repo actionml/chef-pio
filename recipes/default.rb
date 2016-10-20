@@ -10,4 +10,7 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
+
 include_recipe 'java::default'
+include_recipe 'pio::user'
+include_recipe "pio::install_#{node['pio']['install_method']}"
