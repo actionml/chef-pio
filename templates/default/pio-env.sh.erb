@@ -1,0 +1,43 @@
+## We don't set PIO_FS_BASEDIR=/usr/local/pio, since
+# the actual pio directory location is evaluated.
+PIO_FS_BASEDIR="$(readlink -e `dirname $0`/../)"
+PIO_FS_ENGINESDIR=$PIO_FS_BASEDIR/engines
+PIO_FS_TMPDIR=$PIO_FS_BASEDIR/tmp
+
+SPARK_HOME=<%= @spark_home %>
+
+# hdfs-site.xml should contain hdfs locating options,
+# specifically dfs.namenode.rpc-address
+HADOOP_CONF_DIR=${PIO_FS_BASEDIR}/conf/hadoop
+
+# hbase-site.xml should contain zookeeper locating options such as:
+# hbase.zookeeper.quorum, hbase.zookeeper.property.clientPort
+HBASE_CONF_DIR=${PIO_FS_BASEDIR}/conf/hbase
+
+
+## PredictionIO data stores are hardcoded, since ActionML sticks to
+#  ElasticSearch, HBase and HDFS.
+#
+PIO_STORAGE_REPOSITORIES_METADATA_NAME=pio_meta
+PIO_STORAGE_REPOSITORIES_METADATA_SOURCE=ELASTICSEARCH
+
+PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
+PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
+
+PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=HDFS
+
+PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE=elasticsearch
+PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=<%= @es_clustername %>
+PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=<%= @es_hosts.join(',') %>
+## By default 9300 ES port is used, so the bellow variable can be ommited.
+<% if @es_ports.empty? -%># <% end -%>PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=<%= @es_ports.join(',') %>
+
+PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
+PIO_STORAGE_SOURCES_HDFS_PATH=/models
+
+PIO_STORAGE_SOURCES_HBASE_TYPE=hbase
+## HBase hosts variable is not required as well as the ports variable, since
+#  hbase hosts are locate via ZooKeeper.
+#
+# PIO_STORAGE_SOURCES_HBASE_HOSTS=

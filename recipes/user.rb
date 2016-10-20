@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: pio
-# Recipe:: common
+# Recipe:: user
 #
 # Copyright 2016 ActionML LLC
 #
