@@ -1,0 +1,14 @@
+[Unit]
+Description=Hadoop DataNode Service
+After=syslog.target network.target
+Requires=hdfs-namenode.service
+PartOf=hadoop.service
+
+[Service]
+User=<%= @user %>
+Group=<%= @group %>
+Environment=JAVA_HOME=<%= @java_home %>
+ExecStart=/usr/local/hadoop/bin/hdfs datanode
+
+[Install]
+WantedBy=multi-user.target

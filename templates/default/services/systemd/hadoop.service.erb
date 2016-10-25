@@ -1,0 +1,12 @@
+[Unit]
+Description=Hadoop Services Launcher
+After=syslog.target network.target
+Requires=hdfs-datanode.service hdfs-namenode.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

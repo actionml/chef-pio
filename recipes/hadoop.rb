@@ -34,11 +34,10 @@ end
 
 ## Create hadoop file-system directories
 #
-dirs = %w(tmp dfs dfs/name dfs/sname1 dfs/data1)
-dirs.map {|dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |dir|
+dirs = %w(tmp dfs dfs/name dfs/sname dfs/data1)
+dirs.map {|dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |path|
 
-  directory "hadoop-data-#{dir}" do
-    path dir
+  directory path do
     owner 'hadoop'
     group 'hadoop'
     mode '0750'
@@ -54,7 +53,7 @@ template 'core-site.xml' do
   path File.join(node['pio']['prefix_home'], 'hadoop/etc/hadoop/core-site.xml')
   mode '0644'
 
-  # notifies :restart, 'service_manager[hdfs-namenode]'
+  notifies :restart, 'service_manager[hadoop]'
   action :create
 end
 
@@ -64,16 +63,37 @@ template 'hdfs-site.xml' do
   path File.join(node['pio']['prefix_home'], 'hadoop/etc/hadoop/hdfs-site.xml')
   mode '0644'
 
-  # notifies :restart, 'service_manager[hdfs-namenode]'
+  notifies :restart, 'service_manager[hadoop]'
   action :create
 end
 
-# ## Start hadoop namenode service
-# #
-# service_manager 'hdfs-namenode' do
-#   supports status: true, reload: false
-#   user 'hadoop'
-#   group 'hadoop'
+## Start hadoop services
+#
 
-#   action :start
-# end
+service_manager 'hdfs-namenode' do
+  supports status: true, reload: false
+  user 'hadoop'
+  group 'hadoop'
+
+  variables(
+    home_prefix: node['pio']['prefix_home'],
+    version_file: File.join(node['pio']['libdir'], 'hadoop/dfs/name/current/VERSION')
+  )
+
+  action :start
+end
+
+service_manager 'hdfs-datanode' do
+  supports status: true, reload: false
+  user 'hadoop'
+  group 'hadoop'
+
+  variables(home_prefix: node['pio']['prefix_home'])
+
+  action :start
+end
+
+service_manager 'hadoop' do
+  supports status: true, reload: false
+  action :start
+end
