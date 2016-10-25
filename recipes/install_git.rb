@@ -12,21 +12,30 @@
 
 
 include_recipe 'git'
+include_recipe 'pio::user'
 
-gitdir = File.join(node['pio']['datadir'], 'PredictionIO.git')
-pioattrs = node['pio'][node['pio']['bundle']]
+pio = node['pio'][node['pio']['bundle']]
+gitdir = File.join(node['pio']['rootdir'], File.basename(pio['giturl']))
+
+# Create git directory
+directory gitdir do
+  user node['pio']['user']
+  group node['pio']['user']
+  mode '0750'
+  action :create
+end
 
 # Clone pio repository
 git gitdir do
-  repository pioattrs['giturl']
-  revision pioattrs['gitrev']
+  repository pio['giturl']
+  revision pio['gitrev']
 
   user node['pio']['user']
   group node['pio']['user']
 
-  action(pioattrs['updadte'] ? :sync : :checkout)
+  action(pio['gitupdate'] ? :sync : :checkout)
 end
 
-link node['pio']['homedir'] do
+link "#{node['pio']['prefix_home']}/pio" do
   to gitdir
 end

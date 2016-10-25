@@ -10,47 +10,33 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-userhome = File.join('/home', node['pio']['user'])
-homestore = File.join(node['pio']['datadir'], "#{node['pio']['user']}-home")
-
 user node['pio']['user'] do
   comment 'PredictionIO user'
-  home userhome
+  home "/home/#{node['pio']['user']}"
   shell '/bin/bash'
   system true
   manage_home false
 
+  not_if { node['pio']['user'] == 'root' }
   action :create
 end
 
-# data base directroy (/opt/data)
-directory node['pio']['databasedir'] do
-  recursive true
-  not_if { node['pio']['databasedir'] == '/' }
-
-  action :create
-end
-
-# pio data dir (/opt/data/pio)
-directory node['pio']['datadir'] do
-  owner node['pio']['user']
-  group node['pio']['user']
-  mode '0755'
-  action :create
-end
-
-# pio dist directory
-directory File.join(node['pio']['datadir'], 'dist') do
-  action :create
-end
-
-
-## Create user home data and link it to the actual home directory.
-#  Technically user might exist (ex. if root given), so we
-#  don't process directory creation and linking in this case.
+## Create PIO applications common directories
 #
 
-directory homestore do
+[
+  node['pio']['libdir'],
+  node['pio']['rootdir'],
+].
+each do |dir|
+  directory dir do
+    recursive true
+  end
+end
+
+## Create real home directory and link it to /home/$user
+#
+directory node['pio']['user_homedir'] do
   owner node['pio']['user']
   group node['pio']['user']
   mode '0750'
@@ -59,8 +45,8 @@ directory homestore do
   action :nothing
 end
 
-link userhome do
-  to homestore
+link "/home/#{node['pio']['user']}" do
+  to "#{node['pio']['user_homedir']}"
 
   subscribes :create, "user[#{node['pio']['user']}]"
   action :nothing

@@ -18,3 +18,4 @@ supports 'centos', '>= 7'
 # Cookbook dependencies
 depends 'java'
 depends 'git'
+depends 'ark'

@@ -1,18 +1,27 @@
+## Base files, directories and install method
+#
 default['pio']['bundle'] = 'aml'
 default['pio']['install_method'] = 'git'
 
-default['pio']['databasedir'] = '/opt/data'
-default['pio']['homedir'] = '/usr/local/pio'
-default['pio']['datadir'] = "#{File.join(node['pio']['databasedir'], 'pio')}"
-default['pio']['distdir'] = "#{File.join(node['pio']['datadir'], 'dist')}"
+default['pio']['prefix_home'] = '/usr/local'
+default['pio']['libdir'] = '/opt/data'
+default['pio']['rootdir'] = "#{File.join(node['pio']['libdir'], 'pio')}"
+default['pio']['user_homedir'] = "#{File.join(node['pio']['rootdir'], 'home')}"
 default['pio']['user'] = 'aml'
+default['pio']['apache_mirror'] = node['ark']['apache_mirror']
 
-default['pio']['eventserver']['port'] = 31729
-default['pio']['predictionserver']['port'] = 31730
 
+## AML install method (bundle aml)
+#
 default['pio']['aml']['giturl'] = 'https://github.com/actionml/PredictionIO.git'
 default['pio']['aml']['gitrev'] = 'master'
 default['pio']['aml']['gitupdate'] = true
+
+
+## PIO configuration defaults
+#
+default['pio']['conf']['event_port'] = 31729
+default['pio']['conf']['prediction_port'] = 31730
 
 default['pio']['conf']['spark_home'] = '/usr/local/spark'
 default['pio']['conf']['es_clustername'] = 'elasticsearch'

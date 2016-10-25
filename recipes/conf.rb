@@ -11,16 +11,14 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 
-# create config directories for hadoop and hbase
+# Create pio config directories for  services: hadoop and hbase
 %w(hadoop hbase).each do |dir|
-  directory File.join(node['pio']['homedir'], 'conf', dir) do
-    action :create
-  end
+  directory File.join('/usr/local/pio', 'conf', dir)
 end
 
 # generate pio-env.sh
 template 'pio-env.sh' do
-  path File.join(node['pio']['homedir'], 'conf', 'pio-env.sh')
+  path File.join('/usr/local/pio', 'conf', 'pio-env.sh')
   source 'pio-env.sh.erb'
   mode '0644'
 
@@ -36,7 +34,7 @@ end
 
 # generate hadoop/hbase config files for pio
 %w(hadoop/core-site.xml hbase/hbase-site.xml).each do |path|
-  template File.join(node['pio']['homedir'], 'conf', path) do
+  template File.join('/usr/local/pio', 'conf', path) do
     source "#{File.basename(path)}.erb"
     mode '0644'
   end
