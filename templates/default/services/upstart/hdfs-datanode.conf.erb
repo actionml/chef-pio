@@ -1,0 +1,11 @@
+description "Hadoop DataNode Service"
+
+start on started hdfs-namenode
+stop on stopped hdfs-namenode
+
+kill timeout 20
+setuid <%= @user %>
+setgid <%= @group %>
+
+env JAVA_HOME=<%= @java_home %>
+exec <%= @home_prefix %>/hadoop/bin/hdfs datanode
