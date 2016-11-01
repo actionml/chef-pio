@@ -8,7 +8,6 @@ User=<%= @user %>
 Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
 ExecStart=<%= @home_prefix %>/hadoop/bin/hdfs namenode
-ExecStartPre=/bin/sh -c "[ -f <%= @version_file %> ] || <%= @home_prefix %>/hadoop/bin/hdfs namenode -format"
 
 [Install]
 WantedBy=multi-user.target

@@ -7,10 +7,5 @@ kill timeout 20
 setuid <%= @user %>
 setgid <%= @group %>
 
-pre-start script
-  # Format namenode on the first start up
-  [ -f <%= @version_file %> ] || <%= @home_prefix %>/hadoop/bin/hdfs namenode -format
-end script
-
 env JAVA_HOME=<%= @java_home %>
 exec <%= @home_prefix %>/hadoop/bin/hdfs namenode

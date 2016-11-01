@@ -10,6 +10,7 @@ default['pio']['user_homedir'] = "#{File.join(node['pio']['rootdir'], 'home')}"
 default['pio']['user'] = 'aml'
 default['pio']['apache_mirror'] = node['ark']['apache_mirror']
 
+default['pio']['service_manager'] = 'auto'
 
 ## AML install method (bundle aml)
 #

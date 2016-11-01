@@ -7,6 +7,9 @@ module PIO
     provides :service_manager
 
     property :manager, %w(execute upstart systemd auto), default: 'auto', desired_state: false
+    property :exec_command, [String, Symbol]
+    property :exec_logfile, String
+    property :exec_procregex, String
 
     def copy_properties_to(to, *properties)
       properties = self.class.properties.keys if properties.empty?
@@ -23,7 +26,7 @@ module PIO
       def svc_manager(&block)
         case manager
         when 'auto'
-          svc = service_manager(name, &block)
+          svc = _service_manager(name, &block)
         when 'execute'
           svc = service_manager_execute(name, &block)
         when 'upstart'

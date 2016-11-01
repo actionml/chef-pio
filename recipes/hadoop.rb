@@ -53,7 +53,8 @@ template 'core-site.xml' do
   path File.join(node['pio']['prefix_home'], 'hadoop/etc/hadoop/core-site.xml')
   mode '0644'
 
-  notifies :restart, 'service_manager[hadoop]'
+  notifies :restart, 'service_manager[hdfs-namenode]'
+  notifies :restart, 'service_manager[hdfs-datanode]'
   action :create
 end
 
@@ -63,23 +64,34 @@ template 'hdfs-site.xml' do
   path File.join(node['pio']['prefix_home'], 'hadoop/etc/hadoop/hdfs-site.xml')
   mode '0644'
 
-  notifies :restart, 'service_manager[hadoop]'
+  notifies :restart, 'service_manager[hdfs-namenode]'
+  notifies :restart, 'service_manager[hdfs-datanode]'
   action :create
 end
 
 ## Start hadoop services
 #
 
+# First format HDFS if it's not formatted
+bash 'format hdfs' do
+  user 'hadoop'
+  group 'hadoop'
+
+  code "#{node['pio']['prefix_home']}/hadoop/bin/hdfs namenode -format"
+  creates "#{node['pio']['libdir']}/hadoop/dfs/name/current/VERSION"
+end
+
 service_manager 'hdfs-namenode' do
   supports status: true, reload: false
   user 'hadoop'
   group 'hadoop'
 
-  variables(
-    home_prefix: node['pio']['prefix_home'],
-    version_file: File.join(node['pio']['libdir'], 'hadoop/dfs/name/current/VERSION')
-  )
+  exec_command "#{node['pio']['prefix_home']}/hadoop/bin/hdfs namenode"
+  exec_procregex 'org.apache.hadoop.hdfs.server.namenode.NameNode'
 
+  variables(home_prefix: node['pio']['prefix_home'])
+
+  manager node['pio']['service_manager']
   action :start
 end
 
@@ -88,12 +100,19 @@ service_manager 'hdfs-datanode' do
   user 'hadoop'
   group 'hadoop'
 
+  exec_command "#{node['pio']['prefix_home']}/hadoop/bin/hdfs datanode"
+  exec_procregex "org.apache.hadoop.hdfs.server.datanode.DataNode"
+
   variables(home_prefix: node['pio']['prefix_home'])
 
+  manager node['pio']['service_manager']
   action :start
 end
 
 service_manager 'hadoop' do
   supports status: true, reload: false
+  exec_command :noop
+
+  manager node['pio']['service_manager']
   action :start
 end

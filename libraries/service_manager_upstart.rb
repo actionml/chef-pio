@@ -2,7 +2,7 @@ module PIO
   class ServiceManagerUpstart < ServiceBase
     resource_name :service_manager_upstart
 
-    provides :service_manager, platform: 'ubuntu'
+    provides :_service_manager, platform: 'ubuntu'
 
     action :start do
       template "/etc/init/#{service_name}.conf" do

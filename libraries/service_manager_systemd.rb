@@ -2,17 +2,17 @@ module PIO
   class ServiceManagerSystemd < ServiceBase
     resource_name :service_manager_systemd
 
-    provides :service_manager, platform: 'fedora'
+    provides :_service_manager, platform: 'fedora'
 
-    provides :service_manager, platform: %w(redhat centos) do |node|
+    provides :_service_manager, platform: %w(redhat centos) do |node|
       node['platform_version'].to_f >= 7.0
     end
 
-    provides :service_manager, platform: 'debian' do |node|
+    provides :_service_manager, platform: 'debian' do |node|
       node['platform_version'].to_f >= 8.0
     end
 
-    provides :service_manager, platform: 'ubuntu' do |node|
+    provides :_service_manager, platform: 'ubuntu' do |node|
       node['platform_version'].to_f >= 15.04
     end
 
