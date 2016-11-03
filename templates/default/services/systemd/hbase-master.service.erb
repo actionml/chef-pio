@@ -1,0 +1,12 @@
+[Unit]
+Description=HBase Master Server
+After=syslog.target network.target
+
+[Service]
+User=<%= @user %>
+Group=<%= @group %>
+Environment=JAVA_HOME=<%= @java_home %>
+ExecStart=<%= @home_prefix %>/hbase/bin/hbase master start
+
+[Install]
+WantedBy=multi-user.target

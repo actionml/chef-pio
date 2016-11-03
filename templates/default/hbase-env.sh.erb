@@ -1,0 +1,7 @@
+## For details please see  https://github.com/apache/hbase/blob/master/conf/hbase-env.sh
+#  For more on why as well as other possible settings, see http://wiki.apache.org/hadoop/PerformanceTuning
+
+# May only work with SUN JVM.
+export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
+
+export HBASE_LOG_DIR=<%= node['pio']['libdir'] %>/hbase/logs

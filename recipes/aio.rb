@@ -12,3 +12,4 @@
 
 include_recipe 'pio::default'
 include_recipe 'pio::hadoop'
+include_recipe 'pio::hbase'

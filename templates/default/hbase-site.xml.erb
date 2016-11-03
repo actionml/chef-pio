@@ -4,6 +4,16 @@
 
 <configuration>
     <property>
+        <name>hbase.tmp.dir</name>
+        <value><%= node['pio']['libdir'] %>/hbase</value>
+    </property>
+
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://<%= node['pio']['conf']['namenode_host'] %>:<%= node['pio']['conf']['namenode_port'] %>/hbase</value>
+    </property>
+
+    <property>
         <name>hbase.zookeeper.property.clientPort</name>
         <value><%= node['pio']['conf']['zookeeper_port'] %></value>
     </property>
@@ -11,5 +21,21 @@
     <property>
         <name>hbase.zookeeper.quorum</name>
         <value><%= Array(node['pio']['conf']['zookeeper_hosts']).join(',') %></value>
+    </property>
+
+    <!-- Hartonoworks best practices -->
+    <property>
+        <name>hbase.rpc.timeout</name>
+        <value>300000</value>
+    </property>
+
+    <property>
+        <name>hbase.client.scanner.timeout.period</name>
+        <value>300000</value>
+    </property>
+
+    <property>
+        <name>zookeeper.session.timeout</name>
+        <value>300000</value>
     </property>
 </configuration>
