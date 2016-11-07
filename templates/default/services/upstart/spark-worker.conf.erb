@@ -1,0 +1,14 @@
+description "Spark Worker Service"
+
+start on started spark-master
+stop on stopped spark-master
+
+kill timeout 20
+setuid aml
+setgid hadoop
+
+env JAVA_HOME=<%= @java_home %>
+env SPARK_HOME=<%= @home_prefix %>/spark
+env DAEMON_ARGS=
+
+exec $SPARK_HOME/sbin/start-spark.sh worker $DAEMON_ARGS

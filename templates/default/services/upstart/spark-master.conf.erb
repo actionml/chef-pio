@@ -1,0 +1,14 @@
+description "Spark Master Service"
+
+start on (starting spark-worker or (filesystem and net-device-up IFACE!=lo))
+stop on runlevel [!2345]
+
+kill timeout 20
+setuid aml
+setgid hadoop
+
+env JAVA_HOME=<%= @java_home %>
+env SPARK_HOME=<%= @home_prefix %>/spark
+env DAEMON_ARGS=
+
+exec $SPARK_HOME/sbin/start-spark.sh master $DAEMON_ARGS

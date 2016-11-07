@@ -31,6 +31,21 @@ default['pio']['hbase']['url'] = "#{
 }"
 
 
+## Spark
+#
+default['pio']['spark']['version'] = '1.6.3'
+default['pio']['spark']['sha256'] = '389e79458ad1d8ad8044643d97304d09bf3ca31f804c386e560033c48123cd69'
+default['pio']['spark']['basename'] = "spark-#{node['pio']['spark']['version']}"
+default['pio']['spark']['archive'] = "#{node['pio']['spark']['basename']}-bin-hadoop2.6.tgz"
+
+default['pio']['spark']['url'] = "#{
+  File.join(node['pio']['apache_mirror'], 'spark',
+            node['pio']['spark']['basename'],
+            node['pio']['spark']['archive']
+  )
+}"
+
+
 ## ElasticSearch
 #
 default['elasticsearch']['version'] = '1.7.5'

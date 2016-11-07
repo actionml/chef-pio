@@ -1,0 +1,15 @@
+[Unit]
+Description=Spark Master Service
+After=syslog.target network.target
+PartOf=spark.service
+
+[Service]
+User=<%= @user %>
+Group=<%= @group %>
+Environment=JAVA_HOME=<%= @java_home %>
+Environment=SPARK_HOME=<%= @home_prefix %>/spark
+Environment=DAEMON_ARGS=
+ExecStart=<%= @home_prefix %>/spark/sbin/start-spark.sh master $DAEMON_ARGS
+
+[Install]
+WantedBy=multi-user.target

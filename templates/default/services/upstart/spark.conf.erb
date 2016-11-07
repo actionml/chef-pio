@@ -1,0 +1,17 @@
+description "Spark Services wrapper task"
+start on filesystem and net-device-up IFACE!=lo
+stop on starting rc RUNLEVEL=[!2345]
+
+console none
+
+pre-start script
+    for s in spark-master spark-worker; do
+        start $s || :
+    done
+end script
+
+post-stop script
+    for s in spark-worker spark-master; do
+        stop $s || :
+    done
+end script
