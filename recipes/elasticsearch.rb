@@ -11,3 +11,7 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 include_recipe 'elasticsearch'
+
+elasticsearch_service 'elasticsearch' do
+  action :start
+end

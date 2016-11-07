@@ -25,7 +25,6 @@ default['pio']['aml']['gitupdate'] = true
 default['pio']['conf']['event_port'] = 31729
 default['pio']['conf']['prediction_port'] = 31730
 
-default['pio']['conf']['spark_home'] = '/usr/local/spark'
 default['pio']['conf']['es_clustername'] = 'elasticsearch'
 default['pio']['conf']['es_hosts'] = %w(127.0.0.1)
 ## es_ports can be a list of ports corresponding hosts,

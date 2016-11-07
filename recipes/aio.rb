@@ -10,7 +10,10 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
+node.default['pio']['aio'] = true
+
 include_recipe 'pio::default'
 include_recipe 'pio::hadoop'
 include_recipe 'pio::hbase'
+include_recipe 'pio::spark'
 include_recipe 'pio::elasticsearch'

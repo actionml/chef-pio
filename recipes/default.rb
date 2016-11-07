@@ -11,6 +11,13 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 
+node.default['pio']['conf']['spark_home'] = "#{node['pio']['home_prefix']}/spark"
+node.default['ark']['prefix_root'] = node['pio']['home_prefix']
+node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
+node.default['ark']['prefix_home'] = node['pio']['home_prefix']
+
+# include the default recipe list
 include_recipe 'java::default'
 include_recipe "pio::install_#{node['pio']['install_method']}"
 include_recipe 'pio::conf'
+include_recipe 'pio::spark'
