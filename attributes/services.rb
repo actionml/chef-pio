@@ -18,8 +18,8 @@ default['pio']['hadoop']['url'] = "#{
 
 ## HBase
 #
-default['pio']['hbase']['version'] = '1.2.3'
-default['pio']['hbase']['sha256'] = 'd5d3d6a6e84e2324f15f05753ca14806b686da351e5d292b44be81e7f79146f6'
+default['pio']['hbase']['version'] = '1.2.4'
+default['pio']['hbase']['sha256'] = '012d506796e28537cdf6e7cf512dc3b6b3c562e2863ca0ec5d48722bffdd265e'
 default['pio']['hbase']['basename'] = "hbase-#{node['pio']['hbase']['version']}"
 default['pio']['hbase']['archive'] = "#{node['pio']['hbase']['basename']}-bin.tar.gz"
 
@@ -29,3 +29,8 @@ default['pio']['hbase']['url'] = "#{
             node['pio']['hbase']['archive']
   )
 }"
+
+
+## ElasticSearch
+#
+default['elasticsearch']['version'] = '1.7.5'

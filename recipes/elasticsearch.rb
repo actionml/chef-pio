@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: pio
-# Recipe:: aio
+# Recipe:: elasticsearch
 #
 # Copyright 2016 ActionML LLC
 #
@@ -10,7 +10,4 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-include_recipe 'pio::default'
-include_recipe 'pio::hadoop'
-include_recipe 'pio::hbase'
-include_recipe 'pio::elasticsearch'
+include_recipe 'elasticsearch'
