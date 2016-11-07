@@ -45,7 +45,7 @@ end
 # Generate hbase-default config
 template 'hbase-env.sh' do
   source 'hbase-env.sh.erb'
-  path File.join(node['pio']['prefix_home'], 'hbase/conf/hbase-env.sh')
+  path File.join(node['pio']['home_prefix'], 'hbase/conf/hbase-env.sh')
   mode '0644'
 
   notifies :restart, 'service_manager[hbase-master]'
@@ -55,7 +55,7 @@ end
 # Generate hbase-site config
 template 'hbase-site.xml' do
   source 'hbase-site.xml.erb'
-  path File.join(node['pio']['prefix_home'], 'hbase/conf/hbase-site.xml')
+  path File.join(node['pio']['home_prefix'], 'hbase/conf/hbase-site.xml')
   mode '0644'
 
   notifies :restart, 'service_manager[hbase-master]'
@@ -70,10 +70,10 @@ service_manager 'hbase-master' do
   user 'hadoop'
   group 'hadoop'
 
-  exec_command "#{node['pio']['prefix_home']}/hbase/bin/hbase master start"
+  exec_command "#{node['pio']['home_prefix']}/hbase/bin/hbase master start"
   exec_procregex 'org.apache.hadoop.hbase.master.HMaster'
 
-  variables(home_prefix: node['pio']['prefix_home'])
+  variables(home_prefix: node['pio']['home_prefix'])
 
   manager node['pio']['service_manager']
   action :start

@@ -1,9 +1,10 @@
 ## Base files, directories and install method
 #
+default['pio']['aio'] = false
 default['pio']['bundle'] = 'aml'
 default['pio']['install_method'] = 'git'
 
-default['pio']['prefix_home'] = '/usr/local'
+default['pio']['home_prefix'] = '/usr/local'
 default['pio']['libdir'] = '/opt/data'
 default['pio']['rootdir'] = "#{File.join(node['pio']['libdir'], 'pio')}"
 default['pio']['user_homedir'] = "#{File.join(node['pio']['rootdir'], 'home')}"

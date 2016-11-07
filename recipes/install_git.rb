@@ -36,6 +36,6 @@ git gitdir do
   action(pio['gitupdate'] ? :sync : :checkout)
 end
 
-link "#{node['pio']['prefix_home']}/pio" do
+link "#{node['pio']['home_prefix']}/pio" do
   to gitdir
 end
