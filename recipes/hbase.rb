@@ -28,9 +28,9 @@ end
 
 ## Create hbase file-system directories
 #
+
 dirs = %w(. logs)
 dirs.map {|dir| File.join(node['pio']['libdir'], 'hbase', dir) }.each do |path|
-
   directory path do
     owner 'hadoop'
     group 'hadoop'
@@ -38,7 +38,6 @@ dirs.map {|dir| File.join(node['pio']['libdir'], 'hbase', dir) }.each do |path|
     recursive true
     action :create
   end
-
 end
 
 # Generate hbase-default config
@@ -79,3 +78,12 @@ service_manager 'hbase-master' do
 end
 
 ## RegionServer is not required in non-distributed mode!!!
+
+## Wrapper service
+service_manager 'hbase' do
+  supports status: true, reload: false
+  exec_command :noop
+
+  manager node['pio']['service_manager']
+  action :start
+end

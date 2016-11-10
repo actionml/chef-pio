@@ -27,7 +27,6 @@ end
 #
 dirs = %w(tmp dfs dfs/name dfs/sname dfs/data1)
 dirs.map {|dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |path|
-
   directory path do
     owner 'hadoop'
     group 'hadoop'
@@ -35,7 +34,6 @@ dirs.map {|dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |path|
     recursive true
     action :create
   end
-
 end
 
 # Generate hadoop core-site config

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: pio
-# Recipe:: pio_git_install
+# Recipe:: ur_git_install
 #
 # Copyright 2016 ActionML LLC
 #
@@ -10,33 +10,28 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-node.default['poise-python']['install_python2'] = true
-node.default['poise-python']['install_python3'] = false
-node.default['poise-python']['install_pypy'] = true
-
 include_recipe 'git'
-include_recipe 'poise-python'
 include_recipe 'pio::base'
 
-pio = node['pio'][node['pio']['bundle']]
-piodir = File.join(node['pio']['libdir'], 'pio')
+ur = node['pio']['ur']
+urdir = File.join(node['pio']['libdir'], 'universal-recommender')
 
-directory piodir do
+directory urdir do
   owner node['pio']['aml']['user']
   group node['pio']['aml']['user']
 end
 
 # Clone pio repository
-git piodir do
-  repository pio['giturl']
-  revision pio['gitrev']
+git urdir do
+  repository ur['giturl']
+  revision ur['gitrev']
 
   user node['pio']['aml']['user']
   group node['pio']['aml']['user']
 
-  action(pio['gitupdate'] ? :sync : :checkout)
+  action(ur['gitupdate'] ? :sync : :checkout)
 end
 
-link "#{node['pio']['home_prefix']}/pio" do
-  to piodir
+link "#{node['pio']['aml']['home']}/ur" do
+  to urdir
 end

@@ -38,7 +38,6 @@ end
 #
 dirs = %w(. logs work)
 dirs.map {|dir| File.join(node['pio']['libdir'], 'spark', dir) }.each do |path|
-
   directory path do
     owner 'aml'
     group 'hadoop'
@@ -46,7 +45,6 @@ dirs.map {|dir| File.join(node['pio']['libdir'], 'spark', dir) }.each do |path|
     recursive true
     action :create
   end
-
 end
 
 # Generate spark-env config

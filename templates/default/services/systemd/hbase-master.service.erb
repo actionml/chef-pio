@@ -1,6 +1,7 @@
 [Unit]
 Description=HBase Master Server
 After=syslog.target network.target
+PartOf=hbase.service
 
 [Service]
 User=<%= @user %>

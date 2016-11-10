@@ -31,11 +31,13 @@ user node['pio']['aml']['user'] do
 end
 
 # AML project directories
-%w(aml aml/big-data).each do |dir|
+%w(aml/big-data).each do |dir|
   directory File.join(node['pio']['libdir'], dir) do
     owner node['pio']['aml']['user']
     group node['pio']['aml']['user']
     mode '0750'
+
+    recursive true
     action :create
   end
 end

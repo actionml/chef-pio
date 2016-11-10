@@ -2,7 +2,6 @@
 #
 default['pio']['aio'] = false
 default['pio']['bundle'] = 'aml'
-default['pio']['install_method'] = 'git'
 default['pio']['pypi_pio_version'] = '0.9.8'
 
 default['pio']['home_prefix'] = '/usr/local'
@@ -25,6 +24,12 @@ end
 default['pio']['aml']['giturl'] = 'https://github.com/actionml/PredictionIO.git'
 default['pio']['aml']['gitrev'] = 'master'
 default['pio']['aml']['gitupdate'] = true
+
+## Universal recommender defaults
+#
+default['pio']['ur']['giturl'] = 'https://github.com/actionml/template-scala-parallel-universal-recommendation'
+default['pio']['ur']['gitrev'] = 'master'
+default['pio']['ur']['gitupdate'] = true
 
 ## PIO configuration defaults
 #

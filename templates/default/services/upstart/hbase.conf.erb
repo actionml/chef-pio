@@ -1,0 +1,17 @@
+description "HBase Services wrapper task"
+start on filesystem and net-device-up IFACE!=lo
+stop on starting rc RUNLEVEL=[!2345]
+
+console none
+
+pre-start script
+    for s in hbase-master; do
+        start $s || :
+    done
+end script
+
+post-stop script
+    for s in hbase-master; do
+        stop $s || :
+    done
+end script
