@@ -18,6 +18,9 @@ node.default['ark']['prefix_home'] = node['pio']['home_prefix']
 
 # include the default recipe list
 include_recipe 'java::default'
-include_recipe "pio::install_#{node['pio']['install_method']}"
+include_recipe 'pio::base'
+include_recipe "pio::pio_#{node['pio']['install_method']}_install"
+include_recipe 'pio::python_modules'
 include_recipe 'pio::conf'
+include_recipe 'pio::hadoop_install'
 include_recipe 'pio::spark'

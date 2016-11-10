@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: pio
-# Recipe:: install_git
+# Recipe:: pio_git_install
 #
 # Copyright 2016 ActionML LLC
 #
@@ -10,23 +10,19 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
+node.default['poise-python']['install_python2'] = true
+node.default['poise-python']['install_python3'] = false
+node.default['poise-python']['install_pypy'] = true
 
 include_recipe 'git'
-include_recipe 'pio::user'
+include_recipe 'poise-python'
+include_recipe 'pio::base'
 
 pio = node['pio'][node['pio']['bundle']]
-gitdir = File.join(node['pio']['rootdir'], File.basename(pio['giturl']))
-
-# Create git directory
-directory gitdir do
-  user node['pio']['user']
-  group node['pio']['user']
-  mode '0750'
-  action :create
-end
+piodir = File.join(node['pio']['libdir'], 'pio')
 
 # Clone pio repository
-git gitdir do
+git piodir do
   repository pio['giturl']
   revision pio['gitrev']
 
@@ -37,5 +33,5 @@ git gitdir do
 end
 
 link "#{node['pio']['home_prefix']}/pio" do
-  to gitdir
+  to piodir
 end

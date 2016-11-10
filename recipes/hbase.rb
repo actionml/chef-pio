@@ -11,8 +11,7 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 
-include_recipe 'pio::user'
-include_recipe 'pio::hadoop'
+include_recipe 'pio::base'
 
 hbase = node['pio']['hbase']
 

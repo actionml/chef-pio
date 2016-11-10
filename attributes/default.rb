@@ -3,22 +3,28 @@
 default['pio']['aio'] = false
 default['pio']['bundle'] = 'aml'
 default['pio']['install_method'] = 'git'
+default['pio']['pypi_pio_version'] = '0.9.8'
 
 default['pio']['home_prefix'] = '/usr/local'
 default['pio']['libdir'] = '/opt/data'
-default['pio']['rootdir'] = "#{File.join(node['pio']['libdir'], 'pio')}"
-default['pio']['user_homedir'] = "#{File.join(node['pio']['rootdir'], 'home')}"
-default['pio']['user'] = 'aml'
 default['pio']['apache_mirror'] = node['ark']['apache_mirror']
 
 default['pio']['service_manager'] = 'auto'
 
 ## AML install method (bundle aml)
 #
+default['pio']['aml']['user'] = 'aml'
+
+# conditional home
+if node['pio']['aml']['user'] == 'root'
+  default['pio']['aml']['home'] = '/root'
+else
+  default['pio']['aml']['home'] = File.join(node['pio']['libdir'], 'aml/home')
+end
+
 default['pio']['aml']['giturl'] = 'https://github.com/actionml/PredictionIO.git'
 default['pio']['aml']['gitrev'] = 'master'
 default['pio']['aml']['gitupdate'] = true
-
 
 ## PIO configuration defaults
 #
