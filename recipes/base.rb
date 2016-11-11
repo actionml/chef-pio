@@ -74,6 +74,20 @@ sudo 'aml user' do
   nopasswd true
 end
 
+# Generate skeleton files, since manage home directory creation
+%w(.bashrc .bash_logout .profile).each do |fname|
+  skel = "/etc/skel/#{fname}"
+
+  file "#{node['pio']['aml']['home']}/#{fname}" do
+    owner node['pio']['aml']['user']
+    group node['pio']['aml']['user']
+
+    content lazy { File.read(skel) }
+    only_if { File.exist?(skel) }
+    action :create_if_missing
+  end
+end
+
 ## Create hadoop user, since we manage "only" installation from source.
 #
 

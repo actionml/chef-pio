@@ -3,7 +3,7 @@ driver:
   name: vagrant
   use_sudo: false
   customize:
-    memory: 2048
+    memory: 3074
 
 provisioner:
   name: chef_solo
