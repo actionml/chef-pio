@@ -99,3 +99,10 @@ user 'hadoop' do
 
   action :create
 end
+
+
+group 'hadoop' do
+  action :modify
+  members node['pio']['aml']['user']
+  append true
+end

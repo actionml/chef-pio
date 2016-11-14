@@ -4,6 +4,7 @@ driver:
   use_sudo: false
   customize:
     memory: 3074
+    cpus: 2
 
 provisioner:
   name: chef_solo

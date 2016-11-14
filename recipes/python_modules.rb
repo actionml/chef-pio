@@ -15,9 +15,24 @@ node.default['poise-python']['install_python3'] = false
 node.default['poise-python']['install_pypy'] = true
 
 include_recipe 'poise-python'
+
+# Install build dependenices
+package_deps = {
+  %w(ubuntu debian) => {
+    default: %w(libffi-dev)
+  },
+  %w(centos redhat) => {
+    default: %w(libffi-devel)
+  }
+}
+
+value_for_platform(package_deps).each do |package_name|
+  package package_name
+end
+
+# Install modules via pip
 python_package 'requests[security]'
 
-# Install pio pip module
 python_package 'predictionio' do
   version node['pio']['pypi_pio_version']
 end

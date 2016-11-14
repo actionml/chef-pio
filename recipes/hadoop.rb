@@ -64,3 +64,45 @@ service_manager 'hadoop' do
   manager node['pio']['service_manager']
   action :start
 end
+
+
+## Bootstrap HDFS PIO default directory structure
+#
+if not File.exist?("#{node['pio']['libdir']}/hadoop/dfs/data1/.bootstrapped")
+  node['pio']['hdfs']['bootstrap'].each do |path, user, mode, group|
+
+    # defaults hdfs directory settings
+    user  ||= node['pio']['hdfs']['user']
+    group ||= node['pio']['hdfs']['group']
+    mode  ||= '0755'
+
+    execute "hdfs mkdir: #{path}" do
+      cwd File.join(node['pio']['home_prefix'], 'hadoop/bin')
+      user node['pio']['hdfs']['user']
+
+      command "./hdfs dfs -mkdir -p #{path}"
+      action :run
+    end
+
+    execute "hdfs chown: #{path}" do
+      cwd File.join(node['pio']['home_prefix'], 'hadoop/bin')
+      user node['pio']['hdfs']['user']
+
+      command "./hdfs dfs -chown #{user}:#{group} #{path}"
+      action :run
+    end
+
+    execute "hdfs chmod: #{path}" do
+      cwd File.join(node['pio']['home_prefix'], 'hadoop/bin')
+      user node['pio']['hdfs']['user']
+
+      command "./hdfs dfs -chmod #{mode} #{path}"
+      action :run
+    end
+  end
+
+  execute 'touch .bootstrapped' do
+    user node['pio']['hdfs']['user']
+    command "touch #{node['pio']['libdir']}/hadoop/dfs/data1/.bootstrapped"
+  end
+end
