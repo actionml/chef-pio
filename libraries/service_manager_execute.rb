@@ -57,5 +57,11 @@ module PIO
       action_stop
       action_start
     end
+
+    action :reload do
+      action_stop
+      action_start
+    end
+
   end
 end

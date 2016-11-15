@@ -16,32 +16,44 @@ module PIO
       node['platform_version'].to_f >= 15.04
     end
 
+    declare_action_class.class_eval do
+      def write_init_files
+        template "/etc/systemd/system/#{service_name}.service" do
+          path "/etc/systemd/system/#{service_name}.service"
+          source "services/systemd/#{service_name}.service.erb"
+          owner 'root'
+          group 'root'
+          mode '0644'
+          variables provided_service_variables
+          cookbook 'pio'
+
+          action :create
+        end
+
+        # avoid 'Unit file changed on disk' warning
+        execute "#{service_name} systemctl daemon-reload" do
+          command '/bin/systemctl daemon-reload'
+          subscribes :run, "template[/etc/systemd/system/#{service_name}.service]", :immediately
+          action :nothing
+        end
+      end
+    end
+
+
     action :start do
-      template "/etc/systemd/system/#{service_name}.service" do
-        path "/etc/systemd/system/#{service_name}.service"
-        source "services/systemd/#{service_name}.service.erb"
-        owner 'root'
-        group 'root'
-        mode '0644'
-        variables provided_service_variables
-        cookbook 'pio'
-
-        notifies :run, "execute[#{service_name} systemctl daemon-reload]", :immediately
-        notifies restart_action, new_resource, :immediately
-        action :create
-      end
-
-      # avoid 'Unit file changed on disk' warning
-      execute "#{service_name} systemctl daemon-reload" do
-        command '/bin/systemctl daemon-reload'
-        action :nothing
-      end
+      # create init files resources
+      write_init_files
 
       # start systemd service
       service service_name do
         provider Chef::Provider::Service::Systemd
         supports new_resource.supports
-        action [:enable, :start]
+
+        unless provision_only?
+          subscribes reload_action, "template[/etc/systemd/system/#{service_name}.service]", :immediately
+        end
+
+        action [:enable, provision_only? ? :nothing : :start]
       end
     end
 
@@ -49,27 +61,43 @@ module PIO
       service service_name do
         provider Chef::Provider::Service::Systemd
         supports new_resource.supports
-        action [:disable, :stop]
         only_if { ::File.exist?("/etc/systemd/system/#{service_name}.service") }
+
+        action [:disable, :stop]
       end
     end
 
     action :restart do
+      # create init files resources
+      write_init_files
+
       service service_name do
         provider Chef::Provider::Service::Systemd
         supports new_resource.supports
-        action :restart
-        only_if { ::File.exist?("/etc/systemd/system/#{service_name}.service") }
+
+        unless provision_only?
+          subscribes :restart, "template[/etc/systemd/system/#{service_name}.service]", :immediately
+        end
+
+        action provision_only? ? :nothing : :restart
       end
     end
 
     action :reload do
+      # create init files resources
+      write_init_files
+
       service service_name do
         provider Chef::Provider::Service::Systemd
         supports new_resource.supports
-        action :reload
-        only_if { ::File.exist?("/etc/systemd/system/#{service_name}.service") }
+
+        unless provision_only?
+          subscribes reload_action, "template[/etc/systemd/system/#{service_name}.service]", :immediately
+        end
+
+        action provision_only? ? :nothing : reload_action
       end
     end
+
   end
 end

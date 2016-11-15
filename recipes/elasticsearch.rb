@@ -13,5 +13,5 @@
 include_recipe 'elasticsearch'
 
 elasticsearch_service 'elasticsearch' do
-  action :start
+  action [:configure, node['pio']['provision_only'] ? :enable : :start]
 end

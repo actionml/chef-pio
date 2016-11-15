@@ -72,7 +72,9 @@ end
 
 ## Start Spark services
 #
+
 service_manager 'spark-master' do
+  manager node['pio']['service_manager']
   supports status: true, reload: false
   user 'aml'
   group 'hadoop'
@@ -82,11 +84,12 @@ service_manager 'spark-master' do
 
   variables(home_prefix: node['pio']['home_prefix'])
 
-  manager node['pio']['service_manager']
+  provision_only node['pio']['provision_only']
   action :start
 end
 
 service_manager 'spark-worker' do
+  manager node['pio']['service_manager']
   supports status: true, reload: false
   user 'aml'
   group 'hadoop'
@@ -96,14 +99,15 @@ service_manager 'spark-worker' do
 
   variables(home_prefix: node['pio']['home_prefix'])
 
-  manager node['pio']['service_manager']
+  provision_only node['pio']['provision_only']
   action :start
 end
 
 service_manager 'spark' do
+  manager node['pio']['service_manager']
   supports status: true, reload: false
   exec_command :noop
 
-  manager node['pio']['service_manager']
+  provision_only node['pio']['provision_only']
   action :start
 end

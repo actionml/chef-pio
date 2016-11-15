@@ -60,10 +60,12 @@ template 'hbase-site.xml' do
   action :create
 end
 
+
 ## Start HBase services
 #
 
 service_manager 'hbase-master' do
+  manager node['pio']['service_manager']
   supports status: true, reload: false
   user 'hadoop'
   group 'hadoop'
@@ -73,7 +75,7 @@ service_manager 'hbase-master' do
 
   variables(home_prefix: node['pio']['home_prefix'])
 
-  manager node['pio']['service_manager']
+  provision_only node['pio']['provision_only']
   action :start
 end
 
@@ -81,9 +83,10 @@ end
 
 ## Wrapper service
 service_manager 'hbase' do
+  manager node['pio']['service_manager']
   supports status: true, reload: false
   exec_command :noop
 
-  manager node['pio']['service_manager']
+  provision_only node['pio']['provision_only']
   action :start
 end

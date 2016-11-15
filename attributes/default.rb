@@ -1,6 +1,7 @@
 ## Base files, directories and install method
 #
 default['pio']['aio'] = false
+default['pio']['provision_only'] = false
 default['pio']['bundle'] = 'aml'
 default['pio']['pypi_pio_version'] = '0.9.8'
 

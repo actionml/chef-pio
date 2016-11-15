@@ -6,6 +6,9 @@ module PIO
     property :user, String, default: 'root'
     property :group, String, default: 'root'
 
+    property :provision_only, [TrueClass, FalseClass], default: false
+    alias :provision_only? :provision_only
+
     def provided_service_variables
       self.variables.merge(
         user: user,
@@ -14,7 +17,7 @@ module PIO
       )
     end
 
-    def restart_action
+    def reload_action
       supports[:reload] ? :reload : :restart
     end
 
