@@ -20,10 +20,10 @@ include_recipe 'poise-python'
 # Install build dependenices
 package_deps = {
   %w(ubuntu debian) => {
-    default: %w(libffi-dev)
+    default: %w(libssl-dev libffi-dev)
   },
   %w(centos redhat) => {
-    default: %w(libffi-devel)
+    default: %w(openssl-devel libffi-devel)
   }
 }
 
