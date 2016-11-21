@@ -37,3 +37,4 @@ suites:
     attributes:
       pio:
         service_manager: auto
+        provision_only: true

@@ -32,6 +32,12 @@ default['pio']['ur']['giturl'] = 'https://github.com/actionml/template-scala-par
 default['pio']['ur']['gitrev'] = 'master'
 default['pio']['ur']['gitupdate'] = true
 
+## Mahout defaults
+#
+default['pio']['mahout']['giturl'] = 'https://github.com/apache/mahout.git'
+default['pio']['mahout']['gitrev'] = 'master'
+default['pio']['mahout']['gitupdate'] = true
+
 ## PIO configuration defaults
 #
 default['pio']['conf']['event_port'] = 31729
