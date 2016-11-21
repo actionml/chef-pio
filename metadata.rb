@@ -17,6 +17,7 @@ supports 'centos', '>= 7'
 
 # Cookbook dependencies
 depends 'apt'
+depends 'build-essential'
 depends 'java'
 depends 'git'
 depends 'ark'

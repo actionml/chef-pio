@@ -14,6 +14,7 @@ node.default['poise-python']['install_python2'] = true
 node.default['poise-python']['install_python3'] = false
 node.default['poise-python']['install_pypy'] = true
 
+include_recipe 'build-essential'
 include_recipe 'poise-python'
 
 # Install build dependenices
