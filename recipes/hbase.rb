@@ -73,7 +73,11 @@ service_manager 'hbase-master' do
   exec_command "#{node['pio']['home_prefix']}/hbase/bin/hbase master start"
   exec_procregex 'org.apache.hadoop.hbase.master.HMaster'
 
-  variables(home_prefix: node['pio']['home_prefix'])
+  variables(
+    home_prefix: node['pio']['home_prefix'],
+    nofile: node['pio']['hbase']['nofile']
+  )
+
 
   provision_only node['pio']['provision_only']
   action :start

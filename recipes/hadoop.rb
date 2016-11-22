@@ -30,7 +30,10 @@ service_manager 'hdfs-namenode' do
   exec_command "#{node['pio']['home_prefix']}/hadoop/bin/hdfs namenode"
   exec_procregex 'org.apache.hadoop.hdfs.server.namenode.NameNode'
 
-  variables(home_prefix: node['pio']['home_prefix'])
+  variables(
+    home_prefix: node['pio']['home_prefix'],
+    nofile: node['pio']['hadoop']['nofile']
+  )
 
   subscribes :restart, 'template[core-site.xml]'
   subscribes :restart, 'template[hdfs-site.xml]'
@@ -47,7 +50,10 @@ service_manager 'hdfs-datanode' do
   exec_command "#{node['pio']['home_prefix']}/hadoop/bin/hdfs datanode"
   exec_procregex "org.apache.hadoop.hdfs.server.datanode.DataNode"
 
-  variables(home_prefix: node['pio']['home_prefix'])
+  variables(
+    home_prefix: node['pio']['home_prefix'],
+    nofile: node['pio']['hadoop']['nofile']
+  )
 
   subscribes :restart, 'template[core-site.xml]'
   subscribes :restart, 'template[hdfs-site.xml]'

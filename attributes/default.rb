@@ -4,6 +4,7 @@ default['pio']['aio'] = false
 default['pio']['provision_only'] = false
 default['pio']['bundle'] = 'aml'
 default['pio']['pypi_pio_version'] = '0.9.8'
+default['pio']['ulimit_nofile'] = 64000
 
 default['pio']['home_prefix'] = '/usr/local'
 default['pio']['libdir'] = '/opt/data'

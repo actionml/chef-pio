@@ -26,7 +26,10 @@ service_manager 'spark-master' do
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh master"
   exec_procregex 'org.apache.spark.deploy.master.Master'
 
-  variables(home_prefix: node['pio']['home_prefix'])
+  variables(
+    home_prefix: node['pio']['home_prefix'],
+    nofile: node['pio']['spark']['nofile']
+  )
 
   subscribes :restart, 'template[spark-env.sh]'
   subscribes :restart, 'template[spark-defaults.conf]'
@@ -44,7 +47,10 @@ service_manager 'spark-worker' do
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh worker"
   exec_procregex 'org.apache.spark.deploy.worker.Worker'
 
-  variables(home_prefix: node['pio']['home_prefix'])
+  variables(
+    home_prefix: node['pio']['home_prefix'],
+    nofile: node['pio']['spark']['nofile']
+  )
 
   subscribes :restart, 'template[spark-env.sh]'
   subscribes :restart, 'template[spark-defaults.conf]'

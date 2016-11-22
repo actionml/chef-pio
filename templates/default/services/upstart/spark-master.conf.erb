@@ -7,6 +7,8 @@ kill timeout 20
 setuid aml
 setgid hadoop
 
+limit nofile <%= @nofile %> <%= @nofile %>
+
 env JAVA_HOME=<%= @java_home %>
 env SPARK_HOME=<%= @home_prefix %>/spark
 env DAEMON_ARGS=

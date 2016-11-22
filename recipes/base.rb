@@ -106,3 +106,14 @@ group 'hadoop' do
   members node['pio']['aml']['user']
   append true
 end
+
+
+## Limits
+#
+user_ulimit node['pio']['aml']['user'] do
+  filehandle_limit node['pio']['ulimit_nofile']
+end
+
+user_ulimit 'hadoop' do
+  filehandle_limit node['pio']['hadoop']['nofile']
+end

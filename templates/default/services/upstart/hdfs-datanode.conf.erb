@@ -7,5 +7,7 @@ kill timeout 20
 setuid <%= @user %>
 setgid <%= @group %>
 
+limit nofile <%= @nofile %> <%= @nofile %>
+
 env JAVA_HOME=<%= @java_home %>
 exec <%= @home_prefix %>/hadoop/bin/hdfs datanode
