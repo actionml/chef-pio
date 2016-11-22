@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: pio
-# Recipe:: spark_install
+# Recipe:: spark
 #
 # Copyright 2016 ActionML LLC
 #
