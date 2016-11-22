@@ -10,12 +10,7 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-node.default['poise-python']['install_python2'] = true
-node.default['poise-python']['install_python3'] = false
-node.default['poise-python']['install_pypy'] = true
-
 include_recipe 'git'
-include_recipe 'poise-python'
 include_recipe 'pio::base'
 
 pio = node['pio'][node['pio']['bundle']]

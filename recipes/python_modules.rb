@@ -17,6 +17,17 @@ node.default['poise-python']['install_pypy'] = true
 include_recipe 'build-essential'
 include_recipe 'poise-python'
 
+## Create default /usr/bin/python -> python2.7 link,
+#  since that is what PIO and friends expect.
+#
+execute 'update-alternatives python' do
+  command 'update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1'
+
+  not_if  { File.exist?('/usr/bin/python') }
+  only_if { node['platform_family'] == 'debian' }
+  action :run
+end
+
 # Install build dependenices
 package_deps = {
   %w(ubuntu debian) => {
