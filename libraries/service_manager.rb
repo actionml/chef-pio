@@ -10,6 +10,7 @@ module PIO
     property :exec_command, [String, Symbol]
     property :exec_logfile, String
     property :exec_procregex, String
+    property :exec_cwd, String
 
     def copy_properties_to(to, *properties)
       properties = self.class.properties.keys if properties.empty?

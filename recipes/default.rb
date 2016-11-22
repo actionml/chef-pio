@@ -16,7 +16,6 @@ node.default['ark']['prefix_root'] = node['pio']['home_prefix']
 node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
 node.default['ark']['prefix_home'] = node['pio']['home_prefix']
 
-# include the default recipe list
 include_recipe 'apt::default'
 include_recipe 'java::default'
 include_recipe 'pio::base'
@@ -25,6 +24,12 @@ include_recipe 'pio::hadoop_install'
 include_recipe 'pio::spark_install'
 include_recipe 'pio::python_modules'
 include_recipe 'pio::pio_git_install'
-include_recipe 'pio::ur_git_install'
+
+# Don't install UR on production system
+include_recipe 'pio::ur_git_install' if node['pio']['aio']
+
 include_recipe 'pio::mahout_git_install'
 include_recipe 'pio::conf'
+
+# Don't need eventserver started automatically on AIO instance
+include_recipe 'pio::eventserver' unless node['pio']['aio']

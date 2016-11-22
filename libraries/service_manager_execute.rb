@@ -7,6 +7,7 @@ module PIO
     property :exec_command, [String, Symbol], required: true
     property :exec_logfile, String
     property :exec_procregex, String
+    property :exec_cwd, String
 
     def logfile
       exec_logfile ? exec_logfile : "/tmp/#{name}_execute.log"
@@ -30,6 +31,7 @@ module PIO
 
       execute "start service #{name}" do
         command "#{exec_command} >> #{logfile} 2>&1 &"
+        cwd exec_cwd
 
         ## setting user and group doesn't work...
         # user user

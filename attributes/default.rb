@@ -41,8 +41,8 @@ default['pio']['mahout']['gitupdate'] = true
 
 ## PIO configuration defaults
 #
-default['pio']['conf']['event_port'] = 31729
-default['pio']['conf']['prediction_port'] = 31730
+default['pio']['conf']['event_port'] = 7070
+default['pio']['conf']['prediction_port'] = 8000
 
 default['pio']['conf']['es_clustername'] = 'elasticsearch'
 default['pio']['conf']['es_hosts'] = %w(127.0.0.1)

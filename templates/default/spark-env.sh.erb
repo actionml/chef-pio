@@ -5,6 +5,8 @@
 HADOOP_CONF_DIR=<%= node['pio']['home_prefix'] %>/hadoop/etc/hadoop
 SPARK_DIST_CLASSPATH=$(<%= node['pio']['home_prefix'] %>/hadoop/bin/hadoop classpath)
 
-# The log directory is pre-set, however logging is disabled by default!
+<% if !node['pio']['aio'] -%>
+# Setting production directories paths
 SPARK_LOG_DIR=<%= node['pio']['libdir'] %>/spark/logs
 SPARK_WORKER_DIR=<%= node['pio']['libdir'] %>/spark/work
+<% end -%>
