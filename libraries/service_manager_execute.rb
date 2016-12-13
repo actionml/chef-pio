@@ -47,7 +47,7 @@ module PIO
 
       execute "stop service #{name}" do
         command <<-EOF
-          ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command}" |
+          ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command} |
             cut -f1 -d' ' | xargs kill
         EOF
 
