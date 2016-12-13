@@ -31,7 +31,7 @@ user node['pio']['aml']['user'] do
 end
 
 # AML project directories
-%w(aml/big-data).each do |dir|
+%w(big-data).each do |dir|
   directory File.join(node['pio']['libdir'], dir) do
     owner node['pio']['aml']['user']
     group node['pio']['aml']['user']
@@ -44,25 +44,24 @@ end
 
 ## Create real home directory and link it to /home/$user
 #
-directory node['pio']['aml']['home'] do
+directory File.join(node['pio']['libdir'], 'aml') do
   owner node['pio']['aml']['user']
   group node['pio']['aml']['user']
   mode '0750'
-
-  not_if { node['pio']['aml']['user'] == 'root' }
   action :create
 end
 
 link "/home/#{node['pio']['aml']['user']}" do
-  to "#{node['pio']['aml']['home']}"
+  to File.join(node['pio']['libdir'], 'aml')
 
   not_if { node['pio']['aml']['user'] == 'root' }
+  not_if { File.exist?("/home/#{node['pio']['aml']['user']}") }
   action :create
 end
 
 ## lib links
-%w(aml/big-data).each do |path|
-  link "#{node['pio']['aml']['home']}/#{File.basename(path)}" do
+%w(big-data).each do |path|
+  link "#{node['pio']['aml']['home']}/#{path}" do
     to File.join(node['pio']['libdir'], path)
   end
 end

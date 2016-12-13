@@ -20,7 +20,7 @@ default['pio']['aml']['user'] = 'aml'
 if node['pio']['aml']['user'] == 'root'
   default['pio']['aml']['home'] = '/root'
 else
-  default['pio']['aml']['home'] = File.join(node['pio']['libdir'], 'aml/home')
+  default['pio']['aml']['home'] = "/home/#{node['pio']['aml']['user']}"
 end
 
 default['pio']['aml']['giturl'] = 'https://github.com/apache/incubator-predictionio.git'
