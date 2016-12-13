@@ -1,16 +1,19 @@
-language: bash
+language: ruby
 services: docker
 
 script:
+  # no actual tests (chefspec might be implemented in future)
   - /bin/true
 
 before_deploy:
-  - env
+  # Test-kitchen run
+  - cp -f .travis-kitchen.yml .kitchen.yml
+  - bundle exec kitchen converge ubuntu-1604
+  - bundle exec kitchen verify ubuntu-1604
 
 deploy:
   provider: script
   script: bash .publish.sh
-
   on:
     tags: true
     condition: $TRAVIS_TAG =~ ^v[0-9]
