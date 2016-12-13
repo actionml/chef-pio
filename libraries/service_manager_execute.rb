@@ -8,6 +8,7 @@ module PIO
     property :exec_logfile, String
     property :exec_procregex, String
     property :exec_cwd, String
+    property :exec_env, Hash
 
     def logfile
       exec_logfile ? exec_logfile : "/tmp/#{name}_execute.log"
@@ -30,6 +31,7 @@ module PIO
       return if noop?
 
       execute "start service #{name}" do
+        environment exec_env
         command "#{exec_command} >> #{logfile} 2>&1 &"
         cwd exec_cwd
 
@@ -48,9 +50,10 @@ module PIO
       execute "stop service #{name}" do
         command <<-EOF
           ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command} |
-            cut -f1 -d' ' | xargs kill
+            sed -e 's/[ \\t]//' -e 's/\\([0-9]*\\).*/\\1/' | xargs kill
         EOF
 
+        only_if "ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command}"
         action :run
       end
     end

@@ -45,8 +45,8 @@ service_manager 'eventserver' do
   user node['pio']['aml']['user']
   group node['pio']['aml']['user']
 
-  exec_command "#{node['pio']['home_prefix']}/hadoop/bin/hdfs namenode"
-  exec_procregex '/usr/local/pio/assembly/pio-assembly.*'
+  exec_command "#{node['pio']['home_prefix']}/pio/bin/pio eventserver"
+  exec_procregex "#{node['pio']['home_prefix']}/pio/assembly/pio-assembly.*"
   exec_cwd '/var/log/eventserver'
 
   variables(

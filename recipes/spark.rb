@@ -23,6 +23,9 @@ service_manager 'spark-master' do
   user 'aml'
   group 'hadoop'
 
+  exec_env(
+    SPARK_HOME: "#{node['pio']['home_prefix']}/spark"
+  )
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh master"
   exec_procregex 'org.apache.spark.deploy.master.Master'
 
@@ -44,6 +47,9 @@ service_manager 'spark-worker' do
   user 'aml'
   group 'hadoop'
 
+  exec_env(
+    SPARK_HOME: "#{node['pio']['home_prefix']}/spark"
+  )
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh worker"
   exec_procregex 'org.apache.spark.deploy.worker.Worker'
 
