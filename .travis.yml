@@ -4,9 +4,12 @@ services: docker
 script:
   - /bin/true
 
+before_deploy:
+  - env
+
 deploy:
   provider: script
-  script: curl --header "Content-Type: application/json" --data '{"build_parameters": {"release_tag": "$TRAVIS_TAG"}}' --request POST $CIURI
+  script: bash .publish.sh
 
   on:
     tags: true
