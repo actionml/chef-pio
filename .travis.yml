@@ -1,0 +1,13 @@
+language: bash
+services: docker
+
+script:
+  - /bin/true
+
+deploy:
+  provider: script
+  script: curl --header "Content-Type: application/json" --data '{"build_parameters": {"release_tag": "$TRAVIS_TAG"}}' --request POST $CIURI
+
+  on:
+    tags: true
+    condition: $TRAVIS_TAG =~ ^v[0-9]
