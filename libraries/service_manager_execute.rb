@@ -49,7 +49,7 @@ module PIO
       execute "stop service #{name}" do
         command <<-EOF
           ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command} |
-            sed -e 's/[ \\t]//' -e 's/\\([0-9]*\\).*/\\1/' | xargs kill
+            sed -e 's/[ \\t]//' -e 's/\\([0-9]*\\).*/\\1/' | xargs kill && sleep 5
         EOF
 
         only_if "ps -eo pid,command | grep -v grep | grep #{exec_procregex || exec_command}"
