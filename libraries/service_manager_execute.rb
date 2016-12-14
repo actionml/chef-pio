@@ -34,14 +34,9 @@ module PIO
         command "#{exec_command} >> #{logfile} 2>&1 &"
         cwd exec_cwd
 
-        user user
-        group group
-        environment(
-          {
-            'USER' => 'user'
-
-          }.merge(exec_env)
-        )
+        user new_resource.user
+        group new_resource.group
+        environment exec_env
 
         not_if "ps -ef | grep -v grep | grep #{exec_procregex || exec_command}"
         action :run
