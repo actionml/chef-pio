@@ -9,7 +9,7 @@ before_deploy:
   # Test-kitchen run
   - cp -f .travis-kitchen.yml .kitchen.yml
   - bundle exec kitchen converge ubuntu-1604
-  - bundle exec kitchen verify ubuntu-1604
+  - sleep 10 && bundle exec kitchen verify ubuntu-1604
 
 deploy:
   provider: script

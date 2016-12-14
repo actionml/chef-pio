@@ -30,4 +30,6 @@ include_recipe 'pio::ur_git_install' if node['pio']['aio']
 
 include_recipe 'pio::mahout_git_install'
 include_recipe 'pio::conf'
-include_recipe 'pio::eventserver'
+
+# Don't start eventserver on AIO system
+include_recipe 'pio::eventserver' unless node['pio']['aio']
