@@ -8,7 +8,7 @@ module PIO
     property :exec_logfile, String
     property :exec_procregex, String
     property :exec_cwd, String
-    property :exec_env, Hash
+    property :exec_env, Hash, default: {}
 
     def logfile
       exec_logfile ? exec_logfile : "/tmp/#{name}_execute.log"
@@ -31,13 +31,17 @@ module PIO
       return if noop?
 
       execute "start service #{name}" do
-        environment exec_env
         command "#{exec_command} >> #{logfile} 2>&1 &"
         cwd exec_cwd
 
-        ## setting user and group doesn't work...
-        # user user
-        # group group
+        user user
+        group group
+        environment(
+          {
+            'USER' => 'user'
+
+          }.merge(exec_env)
+        )
 
         not_if "ps -ef | grep -v grep | grep #{exec_procregex || exec_command}"
         action :run

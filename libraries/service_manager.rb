@@ -11,7 +11,7 @@ module PIO
     property :exec_logfile, String
     property :exec_procregex, String
     property :exec_cwd, String
-    property :exec_env, Hash
+    property :exec_env, Hash, default: {}
 
     def copy_properties_to(to, *properties)
       properties = self.class.properties.keys if properties.empty?
