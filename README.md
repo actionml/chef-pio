@@ -22,7 +22,7 @@ Include `pio` in your node's `run_list`:
 ```json
 {
   "run_list": [
-    "recipe[pio::default]"
+    "recipe[pio::aio]"
   ]
 }
 ```
