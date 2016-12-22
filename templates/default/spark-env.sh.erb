@@ -10,3 +10,6 @@ SPARK_DIST_CLASSPATH=$(<%= node['pio']['home_prefix'] %>/hadoop/bin/hadoop class
 SPARK_LOG_DIR=<%= node['pio']['libdir'] %>/spark/logs
 SPARK_WORKER_DIR=<%= node['pio']['libdir'] %>/spark/work
 <% end -%>
+
+# Provides path hadoop native libraries to load
+SPARK_DAEMON_JAVA_OPTS="-Djava.library.path=<%= node['pio']['home_prefix'] %>/hadoop/lib/native"

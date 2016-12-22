@@ -10,7 +10,6 @@ setgid hadoop
 limit nofile <%= @nofile %> <%= @nofile %>
 
 env JAVA_HOME=<%= @java_home %>
-env SPARK_HOME=<%= @home_prefix %>/spark
 env DAEMON_ARGS=
 
-exec $SPARK_HOME/sbin/start-spark.sh master $DAEMON_ARGS
+exec <%= @home_prefix %>/spark/sbin/start-spark.sh master $DAEMON_ARGS

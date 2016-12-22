@@ -8,7 +8,6 @@ PartOf=spark.service
 User=<%= @user %>
 Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
-Environment=SPARK_HOME=<%= @home_prefix %>/spark
 Environment=DAEMON_ARGS=
 LimitNOFILE=<%= @nofile %>
 ExecStart=<%= @home_prefix %>/spark/sbin/start-spark.sh worker $DAEMON_ARGS
