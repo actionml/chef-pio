@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   # If this value is a shorthand to a box in Vagrant Cloud then
   # config.vm.box_url doesn't need to be specified.
-  config.vm.box = 'bento/ubuntu-14.04'
+  config.vm.box = 'bento/ubuntu-16.04'
 
 
   # Assign this VM to a host-only network IP, allowing you to access it
@@ -48,13 +48,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider :virtualbox do |vb|
-  #   # Don't boot with headless mode
-  #   vb.gui = true
-  #
-  #   # Use VBoxManage to customize the VM. For example to change memory:
-  #   vb.customize ["modifyvm", :id, "--memory", "1024"]
-  # end
+  config.vm.provider :virtualbox do |vb|
+    # Don't boot with headless mode
+    # vb.gui = true
+
+    # Use VBoxManage to customize the VM. For example to change memory:
+    vb.customize ["modifyvm", :id, "--memory", "3074"]
+  end
   #
   # View the documentation for the provider you're using for more
   # information on available options.
@@ -75,16 +75,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.berkshelf.except = []
 
   config.vm.provision :chef_solo do |chef|
-    chef.json = {
-      mysql: {
-        server_root_password: 'rootpass',
-        server_debian_password: 'debpass',
-        server_repl_password: 'replpass'
-      }
-    }
+    chef.json = {}
 
     chef.run_list = [
-      'recipe[pio::default]'
+      'recipe[pio::aio]'
     ]
   end
 end

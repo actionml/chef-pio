@@ -16,6 +16,22 @@ node.default['ark']['prefix_root'] = node['pio']['home_prefix']
 node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
 node.default['ark']['prefix_home'] = node['pio']['home_prefix']
 
+
+## Apt update && upgrade (apt cookbook resource notified)
+#
+execute 'apt-get upgrade' do
+  command 'apt-get -fuy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade'
+  only_if { apt_installed? }
+
+  environment(
+    'DEBIAN_FRONTEND' => 'noninteractive'
+  )
+
+  action :run
+  notifies :run, 'execute[apt-get update]', :before
+end
+
+
 include_recipe 'apt::default'
 include_recipe 'java::default'
 include_recipe 'pio::base'

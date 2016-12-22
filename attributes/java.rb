@@ -1,4 +1,4 @@
-default['java']['oracle']['accept_oracle_download_terms'] = true
-# This's overriden for AIO which is shiped with openjdk!
-default['java']['install_flavor'] = 'oracle'
+## We ship with openjdk by default
+# default['java']['oracle']['accept_oracle_download_terms'] = true
+default['java']['install_flavor'] = 'openjdk'
 default['java']['jdk_version'] = 8

@@ -44,6 +44,6 @@ execute 'build mahout' do
   user node['pio']['aml']['user']
   group node['pio']['aml']['user']
 
-  command 'mvn clean install -DskipTests'
+  command 'mvn -q clean install -DskipTests'
   action :nothing
 end

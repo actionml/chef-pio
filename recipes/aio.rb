@@ -11,7 +11,6 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 node.default['pio']['aio'] = true
-node.override["java"]["install_flavor"] = 'openjdk'
 
 include_recipe 'pio::default'
 include_recipe 'pio::hadoop'
