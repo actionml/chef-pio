@@ -7,6 +7,7 @@ PartOf=hbase.service
 User=<%= @user %>
 Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
+Environment=LD_LIBRARY_PATH=<%= @home_prefix %>/hadoop/lib/native
 LimitNOFILE=<%= @nofile %>
 ExecStart=<%= @home_prefix %>/hbase/bin/hbase master start
 

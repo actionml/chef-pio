@@ -25,6 +25,9 @@ service_manager 'spark-master' do
 
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh master"
   exec_procregex 'org.apache.spark.deploy.master.Master'
+  exec_env({
+    'LD_LIBRARY_PATH' => "#{node['pio']['home_prefix']}/hadoop/lib/native"
+  })
 
   variables(
     home_prefix: node['pio']['home_prefix'],
@@ -46,6 +49,9 @@ service_manager 'spark-worker' do
 
   exec_command "#{node['pio']['home_prefix']}/spark/sbin/start-spark.sh worker"
   exec_procregex 'org.apache.spark.deploy.worker.Worker'
+  exec_env({
+    'LD_LIBRARY_PATH' => "#{node['pio']['home_prefix']}/hadoop/lib/native"
+  })
 
   variables(
     home_prefix: node['pio']['home_prefix'],
