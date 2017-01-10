@@ -1,3 +1,4 @@
+sudo: required
 language: ruby
 services: docker
 
@@ -8,8 +9,8 @@ script:
 before_deploy:
   # Test-kitchen run
   - cp -f .travis-kitchen.yml .kitchen.yml
-  - travis_wait bundle exec kitchen converge ubuntu-1604
-  - sleep 10 && bundle exec kitchen verify ubuntu-1604
+  - travis_wait 40 bundle exec kitchen converge ubuntu-1604
+  - bundle exec kitchen verify ubuntu-1604
 
 deploy:
   provider: script
