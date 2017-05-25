@@ -11,6 +11,13 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 
+include_recipe 'java::default'
+
+## Make JAVA_HOME available for the chef-client process (worked before chef13)
+#  Required by scripts started by chef-client (ex. make-distribution.sh)
+#
+ENV['JAVA_HOME'] = node['java']['java_home']
+
 ## Create "aml" user and setup default directory structure
 #
 

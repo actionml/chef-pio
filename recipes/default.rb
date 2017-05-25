@@ -16,7 +16,6 @@ node.default['ark']['prefix_root'] = node['pio']['home_prefix']
 node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
 node.default['ark']['prefix_home'] = node['pio']['home_prefix']
 
-
 ## Apt update && upgrade (apt cookbook resource notified)
 #
 execute 'apt-get upgrade' do
@@ -31,7 +30,6 @@ execute 'apt-get upgrade' do
   notifies :run, 'execute[apt-get update]', :before
 end
 
-
 include_recipe 'apt::default'
 include_recipe 'java::default'
 include_recipe 'pio::base'
@@ -44,7 +42,8 @@ include_recipe 'pio::pio_git_install'
 # Don't install UR on production system
 include_recipe 'pio::ur_git_install' if node['pio']['aio']
 
-include_recipe 'pio::mahout_git_install'
+# !!DEPRECATED!! Mahaout installation is not required anymore
+# include_recipe 'pio::mahout_git_install'
 include_recipe 'pio::conf'
 
 # Don't start eventserver on AIO system

@@ -39,30 +39,6 @@ end
 ## Make distribution
 #
 
-# backup make-distribution.sh
-# file "make-distribution.sh.orig" do
-#   path "#{node['pio']['home_prefix']}/pio/make-distribution.sh.orig"
-#   content File.read("#{node['pio']['home_prefix']}/pio/make-distribution.sh")
-#   mode '0755'
-
-#   user node['pio']['aml']['user']
-#   group node['pio']['aml']['user']
-
-#   only_if { File.exist?("#{node['pio']['home_prefix']}/pio/make-distribution.sh") }
-#   action :create_if_missing
-# end
-
-# cookbook_file 'make-distribution.sh' do
-#   path path "#{node['pio']['home_prefix']}/pio/make-distribution.sh"
-#   source 'make-distribution.sh'
-#   mode '0755'
-
-#   user node['pio']['aml']['user']
-#   group node['pio']['aml']['user']
-
-#   action :create
-# end
-
 execute 'make-distribution.sh' do
   cwd piodir
   command 'bash make-distribution.sh'
