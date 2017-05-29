@@ -6,13 +6,20 @@ PIO_FS_BASEDIR="$(readlink -e `dirname $0`/../)"
 PIO_FS_ENGINESDIR=$PIO_FS_BASEDIR/engines
 PIO_FS_TMPDIR=$PIO_FS_BASEDIR/tmp
 
+# Spark home path
+SPARK_HOME=<%= @spark_home %>
+
 ## Hadoop conf contains core-site.xml with fs.defaultFS specified.
 #  HBase conf contains hbase-site.xml where hbase.zookeeper.quorum must be given
 #  (also set hbase.zookeeper.property.clientPort if default is not used).
-
-SPARK_HOME=<%= @spark_home %>
-HADOOP_CONF_DIR=${PIO_FS_BASEDIR}/conf/hadoop
-HBASE_CONF_DIR=${PIO_FS_BASEDIR}/conf/hbase
+#
+#  It's not clear how pio exactly locates hadoop/hbase configuration files
+#  (In case of problems you can play with it, usually helps).
+#
+#  The following should work with 0.11.0-incubating:
+#
+HADOOP_CONF_DIR=${PIO_FS_BASEDIR}/conf
+HBASE_CONF_DIR=${PIO_FS_BASEDIR}/conf
 
 ## PredictionIO data stores are hardcoded, since ActionML sticks to
 #  ElasticSearch, HBase and HDFS.
