@@ -13,16 +13,20 @@
 include_recipe 'git'
 include_recipe 'pio::base'
 
-pio = node['pio'][node['pio']['bundle']]
-piodir = File.join(node['pio']['libdir'], 'pio')
+## Pull apache pio, run sbt built and untar the created artifact of pio
+#
 
-directory piodir do
+pio = node['pio'][node['pio']['bundle']]
+pio_distdir = File.join(node['pio']['libdir'], 'pio-src')
+piover = pio['gitrev'].sub(/^v/, '')
+
+# clone pio repository
+directory pio_distdir do
   owner node['pio']['aml']['user']
   group node['pio']['aml']['user']
 end
 
-# Clone pio repository
-git piodir do
+git pio_distdir do
   repository pio['giturl']
   revision pio['gitrev']
 
@@ -32,20 +36,31 @@ git piodir do
   action(pio['gitupdate'] ? :sync : :checkout)
 end
 
-link "#{node['pio']['home_prefix']}/pio" do
-  to piodir
-end
-
-## Make distribution
-#
-
+# make distribution, run sbt built
 execute 'make-distribution.sh' do
-  cwd piodir
+  cwd pio_distdir
   command 'bash make-distribution.sh'
 
   user node['pio']['aml']['user']
   group node['pio']['aml']['user']
 
-  not_if "cd #{piodir}; ls sbt/sbt-launch*.jar"
-  action :run
+  subscribes :run, "git[#{pio_distdir}]", :immediately
+  action :nothing
+end
+
+# copy the built pio distribution
+execute 'untar pio artifact' do
+  cwd node['pio']['libdir']
+  command "tar xzf #{pio_distdir}/PredictionIO-#{piover}.tar.gz"
+
+  subscribes :run, "git[#{pio_distdir}]", :immediately
+  action :nothing
+end
+
+link "#{node['pio']['libdir']}/pio" do
+  to "PredictionIO-#{piover}"
+end
+
+link "#{node['pio']['home_prefix']}/pio" do
+  to ::File.join(node['pio']['libdir'], "PredictionIO-#{piover}")
 end
