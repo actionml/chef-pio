@@ -6,7 +6,7 @@ description      'Installs/Configures PIO'
 long_description 'Installs/Configures PredictionIO an open source Machine Learning Server '\
                  'built on top of state-of-the-art open source stack for developers and '\
                  'data scientists create predictive engines for any machine learning task.'
-version          '0.1.2'
+version          '0.1.3'
 
 chef_version ">= 12"
 
