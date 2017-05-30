@@ -15,30 +15,59 @@ include_recipe 'pio::base'
 LINES = {
   profile_path: "PATH=$PATH:#{node['pio']['home_prefix']}/pio/bin",
 
-  aml_aliases: <<-EHD.gsub(/^\s+/, '')
+  aml_aliases: <<-EHD.gsub(/^\s+/, ''),
     alias hgrep="history | grep"
     alias pg="ps -e | grep"
     alias fs="#{node['pio']['home_prefix']}/hadoop/bin/hdfs dfs"
+    # <= AML handy aliases
+  EHD
+
+  source_pypi: <<-EHD.gsub(/^\s+/, '')
+    . /opt/rh/python27/enable
+    # <= sourcing pypi python
   EHD
 }
 
+# Generate .profile on systems which lack it (no skel to generate)
+file "generate .profile" do
+  path "#{node['pio']['aml']['home']}/.profile"
+  owner node['pio']['aml']['user']
+  group node['pio']['aml']['user']
+  mode 0644
+  backup false
+
+  content ''
+  action :create_if_missing
+end
+
 # Provide pio path
-ruby_block "edit .profile" do
+ruby_block "add pio path into .profile" do
   block do
     fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.profile")
-    regex = /# Chef added! Don't edit or delete! - pip bin path/
+    regex = /# Chef added! Don't edit or delete! - pio bin path/
 
     fed.insert_line_if_no_match(regex,
       ['', regex.source, LINES[:profile_path]].join("\n"))
 
     fed.write_file
   end
+end
 
-  only_if { File.exist?("#{node['pio']['aml']['home']}/.profile") }
+# Source pypi provided python
+ruby_block "source pypi in .profile" do
+  block do
+    fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.profile")
+    regex = /# Chef added! Don't edit or delete! - source pypi python/
+
+    fed.insert_line_if_no_match(regex,
+      ['', regex.source, LINES[:source_pypi]].join("\n"))
+
+    fed.write_file
+  end
 end
 
 # Provide aml handy aliases
-ruby_block "edit .bashrc" do
+ruby_block "add aml aliases into .bashrc" do
   block do
     fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.bashrc")
     regex = /# Chef added! Don't edit or delete! - AML handy aliases/
