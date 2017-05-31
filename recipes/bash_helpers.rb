@@ -53,7 +53,7 @@ ruby_block "add pio path into .profile" do
   end
 end
 
-# Source pypi provided python
+# Source pypi provided python (only on RHEL)
 ruby_block "source pypi in .profile" do
   block do
     fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.profile")
@@ -64,6 +64,8 @@ ruby_block "source pypi in .profile" do
 
     fed.write_file
   end
+
+  only_if { platform_family?('rhel') }
 end
 
 # Provide aml handy aliases
