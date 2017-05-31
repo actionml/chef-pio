@@ -123,3 +123,11 @@ end
 user_ulimit 'hadoop' do
   filehandle_limit node['pio']['hadoop']['nofile']
 end
+
+
+## Install rng-tools to increase entropy of /dev/random, the
+# since entropy pool level is very low on cloud systemd.
+#
+package 'rng-tools' do
+  action :install
+end

@@ -32,6 +32,10 @@ end
 
 include_recipe 'apt::default'
 include_recipe 'java::default'
+
+# install rng-tools to increase entropy pool capacity
+include_recipe 'rng-tools::default'
+
 include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
 include_recipe 'pio::hadoop_install'
