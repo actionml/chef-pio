@@ -26,6 +26,14 @@ directory pio_distdir do
   group node['pio']['aml']['user']
 end
 
+# update certificates, fixes build on 14.04
+execute 'update-certificates' do
+  command '/var/lib/dpkg/info/ca-certificates-java.postinst configure'
+
+  only_if { node['platform_family'] == 'debian' }
+  action :run
+end
+
 git pio_distdir do
   repository pio['giturl']
   revision pio['gitrev']
