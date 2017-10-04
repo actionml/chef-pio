@@ -11,6 +11,7 @@ limit nofile <%= @nofile %> <%= @nofile %>
 
 env PIO_EVENTSEVER_PORT=7070
 env JAVA_HOME=<%= @java_home %>
+env PIO_LOG_DIR=/var/log/eventserver
 
 script
     # source default daemon settings
