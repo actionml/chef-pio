@@ -51,4 +51,4 @@ default['pio']['spark']['url'] = "#{
 
 ## ElasticSearch
 #
-default['elasticsearch']['version'] = '1.7.5'
+default['elasticsearch']['version'] = '1.7.6'
