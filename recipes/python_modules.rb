@@ -10,10 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-node.default['poise-python']['install_python2'] = true
-node.default['poise-python']['install_python3'] = false
-node.default['poise-python']['install_pypy'] = true
-
 include_recipe 'build-essential'
 include_recipe 'poise-python'
 
@@ -30,16 +26,21 @@ end
 
 # Install build dependenices
 package_deps = {
-  %w(ubuntu debian) => {
-    default: %w(libssl-dev libffi-dev)
+  %w[ubuntu debian] => {
+    default: %w[libssl-dev libffi-dev]
   },
-  %w(centos redhat) => {
-    default: %w(openssl-devel libffi-devel)
+  %w[centos redhat] => {
+    default: %w[openssl-devel libffi-devel]
   }
 }
 
 value_for_platform(package_deps).each do |package_name|
   package package_name
+end
+
+# Install python 2 runtime
+python_runtime '2' do
+  setuptools_version false
 end
 
 # Install modules via pip
