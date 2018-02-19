@@ -24,20 +24,20 @@ else
 end
 
 default['pio']['aml']['giturl'] = 'https://github.com/apache/incubator-predictionio.git'
-default['pio']['aml']['gitrev'] = 'v0.11.0-incubating'
+default['pio']['aml']['gitrev'] = 'v0.12.0-incubating'
 default['pio']['aml']['gitupdate'] = true
 
 ## Universal recommender defaults
 #
 default['pio']['ur']['giturl'] = 'https://github.com/actionml/universal-recommender.git'
-default['pio']['ur']['gitrev'] = '0.6.0'
+default['pio']['ur']['gitrev'] = '0.7.0'
 default['pio']['ur']['gitupdate'] = true
 
-## !!DEPRECATED!! Mahout defaults
+## Mahout defaults
 #
-#default['pio']['mahout']['giturl'] = 'https://github.com/apache/mahout.git'
-#default['pio']['mahout']['gitrev'] = '00a2883ec69b0807a5486c61dfcc7ef27f35ddc6'
-#default['pio']['mahout']['gitupdate'] = true
+default['pio']['mahout']['giturl'] = 'https://github.com/actionml/mahout.git'
+default['pio']['mahout']['gitrev'] = 'ae984b8d3960bde18412da840fe5d9d8b75cdfcf'
+default['pio']['mahout']['gitupdate'] = true
 
 ## PIO configuration defaults
 #

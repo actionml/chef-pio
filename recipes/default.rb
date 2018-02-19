@@ -10,7 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
 node.default['pio']['conf']['spark_home'] = "#{node['pio']['home_prefix']}/spark"
 node.default['ark']['prefix_root'] = node['pio']['home_prefix']
 node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
@@ -46,8 +45,7 @@ include_recipe 'pio::pio_git_install'
 # Don't install UR on production system
 include_recipe 'pio::ur_git_install' if node['pio']['aio']
 
-# !!DEPRECATED!! Mahaout installation is not required anymore
-# include_recipe 'pio::mahout_git_install'
+include_recipe 'pio::mahout_git_install'
 include_recipe 'pio::conf'
 
 # Don't start eventserver on AIO system

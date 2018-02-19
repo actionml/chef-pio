@@ -8,7 +8,7 @@ The main approach is too keep this cookbook simple, so the use case for this coo
 
 We support: 
 
- - Ubuntu *>= 14.04*
+ - Ubuntu *>= 16.04*
  - CentOS *>= 7*
 
 If you want this cookbook to work on other platforms you are welcome to open PR and contribute.
