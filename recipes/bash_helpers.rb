@@ -26,41 +26,41 @@ LINES = {
     . /opt/rh/python27/enable
     # <= sourcing pypi python
   EHD
-}
+}.freeze
 
 # Generate .profile on systems which lack it (no skel to generate)
-file "generate .profile" do
-  path "#{node['pio']['aml']['home']}/.profile"
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
-  mode 0644
+file 'generate .profile' do
+  path   "#{node['pio']['home']}/.profile"
+  owner  node['pio']['system_user']
+  group  node['pio']['system_user']
+  mode   0_644
   backup false
 
   content ''
   action :create_if_missing
 end
 
-# Provide pio path
-ruby_block "add pio path into .profile" do
+# Provide PIO path
+ruby_block 'add pio path into .profile' do
   block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.profile")
+    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.profile")
     regex = /# Chef added! Don't edit or delete! - pio bin path/
 
     fed.insert_line_if_no_match(regex,
-      ['', regex.source, LINES[:profile_path]].join("\n"))
+                                ['', regex.source, LINES[:profile_path]].join("\n"))
 
     fed.write_file
   end
 end
 
 # Source pypi provided python (only on RHEL)
-ruby_block "source pypi in .profile" do
+ruby_block 'source pypi in .profile' do
   block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.profile")
+    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.profile")
     regex = /# Chef added! Don't edit or delete! - source pypi python/
 
     fed.insert_line_if_no_match(regex,
-      ['', regex.source, LINES[:source_pypi]].join("\n"))
+                                ['', regex.source, LINES[:source_pypi]].join("\n"))
 
     fed.write_file
   end
@@ -69,16 +69,16 @@ ruby_block "source pypi in .profile" do
 end
 
 # Provide aml handy aliases
-ruby_block "add aml aliases into .bashrc" do
+ruby_block 'add aml aliases into .bashrc' do
   block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['aml']['home']}/.bashrc")
+    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.bashrc")
     regex = /# Chef added! Don't edit or delete! - AML handy aliases/
 
     fed.insert_line_if_no_match(regex,
-      ['', regex.source, LINES[:aml_aliases]].join("\n"))
+                                ['', regex.source, LINES[:aml_aliases]].join("\n"))
 
     fed.write_file
   end
 
-  only_if { File.exist?("#{node['pio']['aml']['home']}/.bashrc") }
+  only_if { File.exist?("#{node['pio']['home']}/.bashrc") }
 end

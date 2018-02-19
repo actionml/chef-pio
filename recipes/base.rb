@@ -10,7 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
 include_recipe 'java::default'
 
 ## Make JAVA_HOME available for the chef-client process (worked before chef13)
@@ -26,22 +25,22 @@ directory node['pio']['libdir'] do
   recursive true
 end
 
-user node['pio']['aml']['user'] do
+user node['pio']['system_user'] do
   comment 'PredictionIO user'
-  home "/home/#{node['pio']['aml']['user']}"
+  home "/home/#{node['pio']['system_user']}"
   shell '/bin/bash'
   system true
   manage_home false
 
-  not_if { node['pio']['aml']['user'] == 'root' }
+  not_if { node['pio']['system_user'] == 'root' }
   action :create
 end
 
 # AML project directories
-%w(big-data).each do |dir|
+%w[big-data].each do |dir|
   directory File.join(node['pio']['libdir'], dir) do
-    owner node['pio']['aml']['user']
-    group node['pio']['aml']['user']
+    owner node['pio']['system_user']
+    group node['pio']['system_user']
     mode '0750'
 
     recursive true
@@ -52,43 +51,44 @@ end
 ## Create real home directory and link it to /home/$user
 #
 directory File.join(node['pio']['libdir'], 'aml') do
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  owner node['pio']['system_user']
+  group node['pio']['system_user']
   mode '0750'
   action :create
 end
 
-link "/home/#{node['pio']['aml']['user']}" do
+link "/home/#{node['pio']['system_user']}" do
   to File.join(node['pio']['libdir'], 'aml')
 
-  not_if { node['pio']['aml']['user'] == 'root' }
-  not_if { File.exist?("/home/#{node['pio']['aml']['user']}") }
+  not_if { node['pio']['system_user'] == 'root' }
+  not_if { File.exist?("/home/#{node['pio']['system_user']}") }
   action :create
 end
 
 ## lib links
-%w(big-data).each do |path|
-  link "#{node['pio']['aml']['home']}/#{path}" do
+%w[big-data].each do |path|
+  link "#{node['pio']['home']}/#{path}" do
     to File.join(node['pio']['libdir'], path)
   end
 end
 
 # Paswordless sudo for aml user
 sudo 'aml user' do
-  name node['pio']['aml']['user']
-  user node['pio']['aml']['user']
+  name node['pio']['system_user']
+  user node['pio']['system_user']
   nopasswd true
 end
 
 # Generate skeleton files, since manage home directory creation
-%w(.bashrc .bash_logout .profile).each do |fname|
+%w[.bashrc .bash_logout .profile].each do |fname|
   skel = "/etc/skel/#{fname}"
 
-  file "#{node['pio']['aml']['home']}/#{fname}" do
-    owner node['pio']['aml']['user']
-    group node['pio']['aml']['user']
+  file "#{node['pio']['home']}/#{fname}" do
+    owner node['pio']['system_user']
+    group node['pio']['system_user']
 
-    content lazy { File.read(skel) }
+    content(lazy { File.read(skel) })
+
     only_if { File.exist?(skel) }
     action :create_if_missing
   end
@@ -106,24 +106,21 @@ user 'hadoop' do
   action :create
 end
 
-
 group 'hadoop' do
   action :modify
-  members node['pio']['aml']['user']
+  members node['pio']['system_user']
   append true
 end
 
-
 ## Limits
 #
-user_ulimit node['pio']['aml']['user'] do
+user_ulimit node['pio']['system_user'] do
   filehandle_limit node['pio']['ulimit_nofile']
 end
 
 user_ulimit 'hadoop' do
   filehandle_limit node['pio']['hadoop']['nofile']
 end
-
 
 ## Install rng-tools to increase entropy of /dev/random, the
 # since entropy pool level is very low on cloud systemd.

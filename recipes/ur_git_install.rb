@@ -17,8 +17,8 @@ ur = node['pio']['ur']
 urdir = File.join(node['pio']['libdir'], 'universal-recommender')
 
 directory urdir do
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  owner node['pio']['system_user']
+  group node['pio']['system_user']
 end
 
 # Clone pio repository
@@ -26,12 +26,12 @@ git urdir do
   repository ur['giturl']
   revision ur['gitrev']
 
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
   action(ur['gitupdate'] ? :sync : :checkout)
 end
 
-link "#{node['pio']['aml']['home']}/ur" do
+link "#{node['pio']['home']}/ur" do
   to urdir
 end

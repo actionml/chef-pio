@@ -48,7 +48,7 @@ service_manager 'hdfs-datanode' do
   group 'hadoop'
 
   exec_command "#{node['pio']['home_prefix']}/hadoop/bin/hdfs datanode"
-  exec_procregex "org.apache.hadoop.hdfs.server.datanode.DataNode"
+  exec_procregex 'org.apache.hadoop.hdfs.server.datanode.DataNode'
 
   variables(
     home_prefix: node['pio']['home_prefix'],
@@ -69,23 +69,21 @@ service_manager 'hadoop' do
   action :start
 end
 
-
 ## Bootstrap HDFS PIO default directory structure
 #
-if not File.exist?("#{node['pio']['libdir']}/hadoop/dfs/data1/.bootstrapped")
+unless File.exist?("#{node['pio']['libdir']}/hadoop/dfs/data1/.bootstrapped")
 
-  execute "hdfs wait-for-daemon" do
+  execute 'hdfs wait-for-daemon' do
     retries 2
     retry_delay 5
 
     cwd File.join(node['pio']['home_prefix'], 'hadoop/bin')
-    command "./hdfs dfs -ls /"
+    command './hdfs dfs -ls /'
 
     action :run
   end
 
   node['pio']['hdfs']['bootstrap'].each do |path, user, mode, group|
-
     # defaults hdfs directory settings
     user  ||= node['pio']['hdfs']['user']
     group ||= node['pio']['hdfs']['group']

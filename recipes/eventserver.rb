@@ -24,8 +24,8 @@ end
 
 # Create eventserver log directory
 directory '/var/log/eventserver' do
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
   mode '0755'
   action :create
 end
@@ -42,8 +42,8 @@ end
 service_manager 'eventserver' do
   manager node['pio']['service_manager']
   supports status: true, reload: false
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
   exec_command "#{node['pio']['home_prefix']}/pio/bin/pio eventserver"
   exec_procregex "#{node['pio']['home_prefix']}/pio/assembly/pio-assembly.*"

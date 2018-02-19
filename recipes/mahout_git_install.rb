@@ -17,8 +17,8 @@ mahout = node['pio']['mahout']
 mahoutdir = File.join(node['pio']['libdir'], 'mahout')
 
 directory mahoutdir do
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  owner node['pio']['system_user']
+  group node['pio']['system_user']
 end
 
 # install maven
@@ -31,8 +31,8 @@ git mahoutdir do
   repository mahout['giturl']
   revision mahout['gitrev']
 
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
   notifies :run, 'execute[build mahout]'
   action(mahout['gitupdate'] ? :sync : :checkout)
@@ -41,8 +41,8 @@ end
 execute 'build mahout' do
   cwd mahoutdir
 
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
   command 'mvn -q clean install -DskipTests'
   action :nothing

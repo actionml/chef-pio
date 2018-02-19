@@ -10,7 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
 include_recipe 'pio::base'
 
 hbase = node['pio']['hbase']
@@ -29,8 +28,8 @@ end
 ## Create hbase file-system directories
 #
 
-dirs = %w(. logs)
-dirs.map {|dir| File.join(node['pio']['libdir'], 'hbase', dir) }.each do |path|
+dirs = %w[. logs]
+dirs.map { |dir| File.join(node['pio']['libdir'], 'hbase', dir) }.each do |path|
   directory path do
     owner 'hadoop'
     group 'hadoop'
@@ -60,10 +59,9 @@ template 'hbase-site.xml' do
   action :create
 end
 
-
-## Start HBase services
+######
+# Start HBase services
 #
-
 service_manager 'hbase-master' do
   manager node['pio']['service_manager']
   supports status: true, reload: false
@@ -77,7 +75,6 @@ service_manager 'hbase-master' do
     home_prefix: node['pio']['home_prefix'],
     nofile: node['pio']['hbase']['nofile']
   )
-
 
   provision_only node['pio']['provision_only']
   action :start

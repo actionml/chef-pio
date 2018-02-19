@@ -16,17 +16,16 @@ include_recipe 'pio::base'
 ## Pull apache pio, run sbt built and untar the created artifact of pio
 #
 
-pio = node['pio'][node['pio']['bundle']]
 pio_distdir = File.join(node['pio']['libdir'], 'pio-src')
-piover = pio['gitrev'].sub(/^v/, '')
+pio_version = node['pio']['gitrev'].sub(/^v/, '')
 
 # clone pio repository
 directory pio_distdir do
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  owner node['pio']['system_user']
+  group node['pio']['system_user']
 end
 
-# update certificates, fixes build on 14.04
+# update certificates on debian platform
 execute 'update-certificates' do
   command '/var/lib/dpkg/info/ca-certificates-java.postinst configure'
 
@@ -35,13 +34,13 @@ execute 'update-certificates' do
 end
 
 git pio_distdir do
-  repository pio['giturl']
-  revision pio['gitrev']
+  repository node['pio']['giturl']
+  revision node['pio']['gitrev']
 
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
-  action(pio['gitupdate'] ? :sync : :checkout)
+  action(node['pio']['gitupdate'] ? :sync : :checkout)
 end
 
 # make distribution, run sbt built
@@ -49,8 +48,8 @@ execute 'make-distribution.sh' do
   cwd pio_distdir
   command 'bash make-distribution.sh'
 
-  user node['pio']['aml']['user']
-  group node['pio']['aml']['user']
+  user node['pio']['system_user']
+  group node['pio']['system_user']
 
   subscribes :run, "git[#{pio_distdir}]", :immediately
   action :nothing
@@ -59,16 +58,16 @@ end
 # copy the built pio distribution
 execute 'untar pio artifact' do
   cwd node['pio']['libdir']
-  command "tar xzf #{pio_distdir}/PredictionIO-#{piover}.tar.gz"
+  command "tar xzf #{pio_distdir}/PredictionIO-#{pio_version}.tar.gz"
 
   subscribes :run, "git[#{pio_distdir}]", :immediately
   action :nothing
 end
 
 link "#{node['pio']['libdir']}/pio" do
-  to "PredictionIO-#{piover}"
+  to "PredictionIO-#{pio_version}"
 end
 
 link "#{node['pio']['home_prefix']}/pio" do
-  to ::File.join(node['pio']['libdir'], "PredictionIO-#{piover}")
+  to ::File.join(node['pio']['libdir'], "PredictionIO-#{pio_version}")
 end

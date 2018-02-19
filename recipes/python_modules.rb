@@ -47,5 +47,5 @@ end
 python_package 'requests[security]'
 
 python_package 'predictionio' do
-  version node['pio']['pypi_pio_version']
+  version node['pio']['pip_package_version']
 end

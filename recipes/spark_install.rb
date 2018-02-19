@@ -10,7 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
 include_recipe 'pio::base'
 
 spark = node['pio']['spark']
@@ -36,8 +35,8 @@ end
 
 ## Create spark file-system directories
 #
-dirs = %w(. logs work)
-dirs.map {|dir| File.join(node['pio']['libdir'], 'spark', dir) }.each do |path|
+dirs = %w[. logs work]
+dirs.map { |dir| File.join(node['pio']['libdir'], 'spark', dir) }.each do |path|
   directory path do
     owner 'aml'
     group 'hadoop'

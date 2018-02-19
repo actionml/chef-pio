@@ -10,7 +10,6 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
 include_recipe 'pio::base'
 
 hadoop = node['pio']['hadoop']
@@ -25,8 +24,8 @@ end
 
 ## Create hadoop file-system directories
 #
-dirs = %w(tmp dfs dfs/name dfs/sname dfs/data1)
-dirs.map {|dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |path|
+dirs = %w[tmp dfs dfs/name dfs/sname dfs/data1]
+dirs.map { |dir| File.join(node['pio']['libdir'], 'hadoop', dir) }.each do |path|
   directory path do
     owner 'hadoop'
     group 'hadoop'
