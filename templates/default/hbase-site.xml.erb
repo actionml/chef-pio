@@ -5,12 +5,12 @@
 <configuration>
     <property >
         <name>hbase.cluster.distributed</name>
-        <value><%= !node['pio']['aio'] %></value>
+        <value><%= !node.recipe?('pio::aio') %></value>
     </property>
 
     <property>
         <name>hbase.tmp.dir</name>
-        <value><%= node['pio']['libdir'] %>/hbase</value>
+        <value><%= @datadir %>/tmp</value>
     </property>
 
     <property>

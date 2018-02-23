@@ -10,5 +10,5 @@ setgid <%= @group %>
 limit nofile <%= @nofile %> <%= @nofile %>
 
 env JAVA_HOME=<%= @java_home %>
-env LD_LIBRARY_PATH=<%= @home_prefix %>/hadoop/lib/native
-exec <%= @home_prefix %>/hbase/bin/hbase master start
+env LD_LIBRARY_PATH=<%= @hadoopdir %>/lib/native
+exec <%= @appdir %>/bin/hbase master start

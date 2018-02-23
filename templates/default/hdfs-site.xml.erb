@@ -18,16 +18,16 @@
 
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>file:///<%= node['pio']['libdir'] %>/hadoop/dfs/name</value>
+        <value>file://<%= @datadir %>/dfs/name</value>
     </property>
 
     <property>
         <name>dfs.namenode.checkpoint.dir</name>
-        <value>file:///<%= node['pio']['libdir'] %>/hadoop/dfs/sname</value>
+        <value>file://<%= @datadir %>/dfs/sname</value>
     </property>
 
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>file:///<%= node['pio']['libdir'] %>/hadoop/dfs/data1</value>
+        <value>file://<%= @datadir %>/dfs/data1</value>
     </property>
 </configuration>

@@ -2,6 +2,6 @@
 #  For more on why as well as other possible settings, see http://wiki.apache.org/hadoop/PerformanceTuning
 
 export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
-export JAVA_LIBRARY_PATH=<%= node['pio']['home_prefix'] %>/hadoop/lib/native
+export JAVA_LIBRARY_PATH=<%= @localdir %>/hadoop/lib/native
 
-export HBASE_LOG_DIR=<%= node['pio']['libdir'] %>/hbase/logs
+export HBASE_LOG_DIR=<%= @datadir %>/logs
