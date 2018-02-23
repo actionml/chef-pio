@@ -8,10 +8,10 @@ long_description 'Installs/Configures PredictionIO an open source Machine Learni
                  'data scientists create predictive engines for any machine learning task.'
 version          '0.2.0'
 
-chef_version ">= 12"
+chef_version '>= 12'
 
 # Supported platforms
-supports 'ubuntu', '>= 16.04'
+supports 'ubuntu', '>= 14.04'
 supports 'centos', '>= 7'
 
 # Cookbook dependencies
