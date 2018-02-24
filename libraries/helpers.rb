@@ -29,6 +29,7 @@ module PIOCookbook
     #
     def default_variables
       {
+        datadir:   node['pio']['datadir'],
         localdir:  node['pio']['localdir'],
         nofile:    node['pio']['ulimit_nofile'],
         java_home: (node['java'] and node['java']['java_home']),
@@ -42,6 +43,14 @@ module PIOCookbook
     def apache_vars(**args)
       args[:appdir] = ::File.join(default_variables[:localdir], args[:app])
       default_variables.merge(args).compact
+    end
+
+    def provision_only?
+      node['pio']['provision_only']
+    end
+
+    def service_actions
+      provision_only? ? [:enable] : [:enable, :start]
     end
   end
 end

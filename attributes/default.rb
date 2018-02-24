@@ -1,19 +1,20 @@
 ######
 # Base cookbook attributes
 #
-default['pio']['aio']            = false
 default['pio']['provision_only'] = false
 default['pio']['ulimit_nofile']  = 64_000
 
-default['pio']['home_prefix'] = '/usr/local'
-default['pio']['libdir']      = '/opt/data'
+default['pio']['localdir']    = '/usr/local'
+default['pio']['datadir']     = '/opt/data'
+default['pio']['datasubdirs'] = []
 
-default['pio']['apache_mirror']   = node['ark']['apache_mirror']
-default['pio']['service_manager'] = 'auto'
+default['pio']['service_manager'] = nil
 
-# System user and home
-default['pio']['system_user'] = 'aml'
-default['pio']['home'] = "/home/#{node['pio']['system_user']}"
+default['pio']['apache_mirror'] = 'http://apache.mirrors.tds.net'
+
+# PIO system user and home (the former can be omitted)
+default['pio']['user'] = 'aml'
+default['pio']['home'] = ''
 
 ######
 # PIO git repository and revision
