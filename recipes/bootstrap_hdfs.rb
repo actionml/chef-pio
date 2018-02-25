@@ -14,46 +14,40 @@
 # Bootstrap HDFS PIO default directory structure
 #
 
-unless ::File.exist?("#{datadir}/hadoop/dfs/data1/.bootstrapped")
-  execute 'hdfs wait-for-daemon' do
-    retries 2
-    retry_delay 5
+# bootstrap-hdfs.sh helper
+template "#{pio_home}/bootstrap-hdfs.sh" do
+  user node['pio']['user']
+  group node['pio']['user']
+  mode '0755'
 
-    cwd "#{localdir}/hadoop/bin"
-    command './hdfs dfs -ls /'
-  end
+  backup false
+  variables(
+    user: 'hadoop', group: 'hadoop',
+    mode: '0755',
+    hadoop_binpath: "#{localdir}/hadoop/bin"
+  )
+end
 
-  node['pio']['hdfs']['bootstrap'].each do |path, user, mode, group|
-    # defaults for hdfs directory
-    user  ||= node['pio']['hdfs']['user']
-    group ||= node['pio']['hdfs']['group']
-    mode  ||= '0755'
+# generate hdfs-structure file from the node attributes
+file "#{pio_home}/.hdfs-structure" do
+  user node['pio']['user']
+  group node['pio']['user']
 
-    execute "hdfs mkdir: #{path}" do
-      cwd "#{localdir}/hadoop/bin"
-      command "./hdfs dfs -mkdir -p #{path}"
-      user 'hadoop'
-      group 'hadoop'
+  backup false
+  content(lazy do
+    node['pio']['hdfs_structure'].inject('') do |lines, rule|
+      lines << Array(rule).join(' ') + "\n"
+      lines
     end
+  end)
+end
 
-    execute "hdfs chown: #{path}" do
-      cwd "#{localdir}/hadoop/bin"
-      command "./hdfs dfs -chown #{user}:#{group} #{path}"
-      user 'hadoop'
-      group 'hadoop'
+# populate HDFS
+bash 'bootstrap initial HDFS structure' do
+  creates  "#{datadir}/hadoop/dfs/data1/.bootstrapped"
+  notifies :start, 'service_manager[hadoop]', :before
 
-      action :run
-    end
-
-    execute "hdfs chmod: #{path}" do
-      cwd "#{localdir}/hadoop/bin"
-      command "./hdfs dfs -chmod #{mode} #{path}"
-      user 'hadoop'
-      group 'hadoop'
-    end
-  end
-
-  execute 'touch .bootstrapped' do
-    command "touch #{datadir}/hadoop/dfs/data1/.bootstrapped"
-  end
+  cwd pio_home
+  code 'cat .hdfs-structure | ./bootstrap-hdfs.sh && '\
+       "touch #{datadir}/hadoop/dfs/data1/.bootstrapped"
 end

@@ -77,14 +77,12 @@ service_manager 'hdfs-datanode' do
   action service_actions
 end
 
-## Hadoop service wrapper
-#  We forcefully start hadoop! Since we need to bootstrap HDFS structure later!
-#
+# Hadoop service wrapper
 service_manager 'hadoop' do
   supports status: true, reload: false
 
   manager node['pio']['service_manager']
-  action :start
+  action :enable
 end
 
 ################

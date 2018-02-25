@@ -54,3 +54,15 @@ default['pio']['conf']['namenode_host'] = '127.0.0.1'
 default['pio']['conf']['namenode_port'] = 9000
 default['pio']['conf']['zookeeper_hosts'] = %w[127.0.0.1]
 default['pio']['conf']['zookeeper_port'] = 2181
+
+########################
+# HDFS initial structure
+#
+# path(directory) user mode group
+#
+default['pio']['hdfs_structure'] = [
+  ['/hbase', 'hadoop', '0755'],
+  ['/user'],
+  ["/user/#{node['pio']['user']}", node['pio']['user'], '0755'],
+  ['/models', node['pio']['user'], '0755']
+]

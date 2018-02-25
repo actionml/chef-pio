@@ -1,0 +1,38 @@
+#!/bin/sh
+
+default_user="<%= @user %>"
+default_group="<%= @group %>"
+default_mode="<%= @mode %>"
+
+# Function to invoke hdfs dfs sub command
+dfs() {
+  sudo -Eu "$default_user" bash -c "<%= @hadoop_binpath %>/hdfs dfs $*"
+}
+
+
+## -----------------------------------------------------------------------------
+#
+
+# 1. wait for hadoop
+retries=2
+while [ $retries -gt 0 ]; do
+  dfs -ls / 1>/dev/null 2>&1
+  [ $? -ne 0 ] || break
+  retries=$((retries-1))
+done
+
+# 2. fail if no hadoop running
+dfs -ls / 1>/dev/null 2>&1 || { >&2 echo "Hadoop is not running!"; exit 1; }
+
+# 3. read and populate HDFS structure from stdin
+#    Note the argument order!
+cat | while read path user mode group; do
+  # choose user, group and mode
+  cu="${user:-$default_user}"
+  cg="${group:-$default_group}"
+  cm="${mode:-$default_mode}"
+
+  dfs -mkdir -p "$path"
+  dfs -chown "$cu:$cg" "$path"
+  dfs -chmod "$cm" "$path"
+done
