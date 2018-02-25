@@ -2,7 +2,7 @@
 # Cookbook Name:: pio
 # Recipe:: bash_helpers
 #
-# Copyright 2016 ActionML LLC
+# Copyright 2016-2018 ActionML LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,27 +12,12 @@
 
 include_recipe 'pio::base'
 
-LINES = {
-  profile_path: "PATH=$PATH:#{node['pio']['home_prefix']}/pio/bin",
-
-  aml_aliases: <<-EHD.gsub(/^\s+/, ''),
-    alias hgrep="history | grep"
-    alias pg="ps -e | grep"
-    alias fs="#{node['pio']['home_prefix']}/hadoop/bin/hdfs dfs"
-    # <= AML handy aliases
-  EHD
-
-  source_pypi: <<-EHD.gsub(/^\s+/, '')
-    . /opt/rh/python27/enable
-    # <= sourcing pypi python
-  EHD
-}.freeze
-
-# Generate .profile on systems which lack it (no skel to generate)
+## Generate .profile on systems which lack it (no skel to generate)
+#
 file 'generate .profile' do
-  path   "#{node['pio']['home']}/.profile"
-  owner  node['pio']['system_user']
-  group  node['pio']['system_user']
+  path   "#{pio_home}/.profile"
+  owner  node['pio']['user']
+  group  node['pio']['user']
   mode   0_644
   backup false
 
@@ -40,45 +25,42 @@ file 'generate .profile' do
   action :create_if_missing
 end
 
-# Provide PIO path
-ruby_block 'add pio path into .profile' do
-  block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.profile")
-    regex = /# Chef added! Don't edit or delete! - pio bin path/
+## Added pio bin directory into PATH (~/.profile)
+#
+edit_file 'PIO bin path' do
+  # set variables first since we use them in other properties
+  variables(default_variables)
 
-    fed.insert_line_if_no_match(regex,
-                                ['', regex.source, LINES[:profile_path]].join("\n"))
+  path    "#{variables[:pio_home]}/.profile"
+  content "PATH=$PATH:#{variables[:localdir]}/pio/bin"
 
-    fed.write_file
-  end
+  action :insert
 end
 
-# Source pypi provided python (only on RHEL)
-ruby_block 'source pypi in .profile' do
-  block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.profile")
-    regex = /# Chef added! Don't edit or delete! - source pypi python/
+## Enable python 2.7 on the RHEL based systems (~/.profile)
+#
+edit_file 'Enable python2.7' do
+  # set variables first since we use them in other properties
+  variables(default_variables)
 
-    fed.insert_line_if_no_match(regex,
-                                ['', regex.source, LINES[:source_pypi]].join("\n"))
-
-    fed.write_file
-  end
+  path    "#{variables[:pio_home]}/.profile"
+  content '. /opt/rh/python27/enable'
 
   only_if { platform_family?('rhel') }
+
+  action :insert
 end
 
-# Provide aml handy aliases
-ruby_block 'add aml aliases into .bashrc' do
-  block do
-    fed = Chef::Util::FileEdit.new("#{node['pio']['home']}/.bashrc")
-    regex = /# Chef added! Don't edit or delete! - AML handy aliases/
+## Populate ~/.bashrc
+#
+edit_file 'Handy AML bashrc aliases' do
+  # set variables first since we use them in other properties
+  variables(default_variables)
 
-    fed.insert_line_if_no_match(regex,
-                                ['', regex.source, LINES[:aml_aliases]].join("\n"))
+  path   "#{variables[:pio_home]}/.bashrc"
+  source 'bashrc.erb'
 
-    fed.write_file
-  end
+  only_if { ::File.exist? "#{variables[:pio_home]}/.bashrc" }
 
-  only_if { File.exist?("#{node['pio']['home']}/.bashrc") }
+  action :insert
 end

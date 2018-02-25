@@ -14,9 +14,7 @@ require 'chef/util/editor'
 require 'chef/util/file_edit'
 
 module PIOCookbook
-  ## Refine chef utils classes
-  #
-  refine Chef::Util::Editor do
+  module ChefUtilEditor
     def remove_content(header, footer)
       replace_content(header, footer)
     end
@@ -60,7 +58,7 @@ module PIOCookbook
     end
   end
 
-  refine Chef::Util::FileEdit do
+  module ChefUtilFileEdit
     def insert_content_if_no_match(regex_start, regex_end, content)
       @changes = (editor.append_content_if_missing(regex_start, regex_end, content) > 0) || @changes
     end
@@ -74,3 +72,6 @@ module PIOCookbook
     end
   end
 end
+
+Chef::Util::Editor.include(PIOCookbook::ChefUtilEditor)
+Chef::Util::FileEdit.include(PIOCookbook::ChefUtilFileEdit)

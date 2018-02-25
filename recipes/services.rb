@@ -11,20 +11,12 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 include_recipe 'pio::default'
-include_recipe 'elasticsearch'
 
 #
 # This recipe brings up PIO dependent services. All Apache services
 # are configured in Pseudo Distributed mode. This approach helps the user
 # to interact with PIO so as it's a real distributed setup.
 #
-
-#######################
-# ElasticSearch service
-#######################
-elasticsearch_service 'elasticsearch' do
-  action [:configure] | service_actions
-end
 
 #################
 # Hadoop services
@@ -85,12 +77,14 @@ service_manager 'hdfs-datanode' do
   action service_actions
 end
 
-# Hadoop service wrapper
+## Hadoop service wrapper
+#  We forcefully start hadoop! Since we need to bootstrap HDFS structure later!
+#
 service_manager 'hadoop' do
   supports status: true, reload: false
 
   manager node['pio']['service_manager']
-  action :enable
+  action :start
 end
 
 ################

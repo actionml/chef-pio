@@ -1,6 +1,8 @@
 module PIOCookbook
   module HelpersMixin
-    ## Auto defined PIO home (can be symlinked in the FS)
+    ## Computed home this one should be used to identify where PIO
+    #  user home is. Note that pio_home is not the directory where PIO is installed
+    #  it's the PIO user directory!!!
     #
     def pio_home
       @pio_home ||= if node['pio']['home'].to_s.empty?
@@ -10,7 +12,9 @@ module PIOCookbook
                     end
     end
 
-    ## PIO home directory (this is really represented in FS)
+    ## PIO user home directory (this directory will be really represented in FS)
+    #  The default behavior is to place the home directory into the datadir,
+    #  unless the value was provided by node['pio']['home'] attribute.
     #
     def pio_homedir
       @pio_homedir ||=
@@ -25,28 +29,41 @@ module PIOCookbook
         end
     end
 
-    ## Some default template variables
-    #
+    # data directory (default: /opt/data)
+    def datadir
+      @datadir ||= node['pio']['datadir']
+    end
+
+    # apps directory (default: /usr/local)
+    def localdir
+      @localdir ||= node['pio']['localdir']
+    end
+
+    # Useful defaults defined for template generations.
     def default_variables
-      {
-        datadir:   node['pio']['datadir'],
-        localdir:  node['pio']['localdir'],
+      @default_variables ||= {
+        datadir:   datadir,
+        localdir:  localdir,
+        sparkdir:  "#{localdir}/spark",
+        hadoopdir: "#{localdir}/hadoop",
         nofile:    node['pio']['ulimit_nofile'],
         java_home: (node['java'] and node['java']['java_home']),
-        hadoopdir: ::File.join(node['pio']['localdir'], 'hadoop'),
         pio_home: pio_home
       }
     end
 
-    ## Some variables for apache service templates
-    #
+    # Apache vars: contains substituted appdir if app has been passed.
     def apache_vars(**args)
-      args[:appdir] = ::File.join(default_variables[:localdir], args[:app])
+      args[:appdir] = ::File.join(localdir, args[:app])
       default_variables.merge(args).compact
     end
 
     def provision_only?
       node['pio']['provision_only']
+    end
+
+    def pio_version
+      node['pio']['gitrev'].sub(/^v/, '')
     end
 
     def service_actions

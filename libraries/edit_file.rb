@@ -11,13 +11,11 @@
 #
 
 require 'tempfile'
-require_relative 'refine_util'
+require_relative 'file_util'
 require_relative 'tempfile_render'
 
 module PIOCookbook
   class EditFile < TempfileRender
-    using PIOCookbook
-
     resource_name :edit_file
     default_action :insert
 

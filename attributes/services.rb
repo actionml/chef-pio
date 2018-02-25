@@ -42,4 +42,4 @@ default['pio']['spark']['url'] =
 
 ###############
 # ElasticSearch
-# Version is applied by the upstream cookbook, we use ES 5.X
+# Version is pinned by the upstream cookbook, we use ES 5.X
