@@ -53,9 +53,10 @@ execute './make-distribution.sh' do
   subscribes :run, "git[#{localdir}/src/PredictionIO]",
              :immediately
 
-  not_if { ::File.exist?("#{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz") }
+  environment('HOME' => pio_home)
+  creates "#{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz"
 
-  action :run
+  action :nothing
 end
 
 # copy the built pio distribution
@@ -68,15 +69,13 @@ execute 'untar pio artifact' do
 end
 
 # populate links to pio application directory
-[
-  "#{localdir}/pio",
-  "#{pio_home}/pio"
-]
-  .each do |link_path|
-    link link_path do
-      to "#{localdir}/PredictionIO-#{pio_version}"
-    end
-  end
+link "#{localdir}/pio" do
+  to "#{localdir}/PredictionIO-#{pio_version}"
+end
+
+link "#{pio_home}/pio" do
+  to "#{localdir}/pio"
+end
 
 ##########################
 # Install and build Mahout
@@ -182,6 +181,58 @@ end
     end
   end
 
-## TO FIX NEED TO START PIO if AIO
-# # Don't start eventserver on AIO system
-# include_recipe 'pio::eventserver' unless node['pio']['aio']
+##############################################
+# Start PIO Event Server on production systems
+##############################################
+
+unless node.recipe?('pio::aio')
+  # Choose default file location
+  default_initfile = case node['platform_family']
+                     when 'debian'
+                       '/etc/default/eventserver'
+                     when 'rhel'
+                       '/etc/sysconfig/eventserver'
+                     else
+                       "#{localdir}/pio/conf/default.rc"
+                     end
+
+  ## At the moment the only way to control eventserver log name and location is chdir!!!
+  #
+  # Create eventserver log directory
+  directory '/var/log/eventserver' do
+    user node['pio']['user']
+    group node['pio']['user']
+    mode '0755'
+    action :create
+  end
+
+  # Generate default config
+  template 'eventserver.default' do
+    source 'services/eventserver.default.erb'
+    path default_initfile
+    mode 0_644
+  end
+
+  # EventServer service
+  service_manager 'eventserver' do
+    supports status: true, reload: false
+    user  'aml'
+    group 'hadoop'
+
+    # set vars before, since we use it in interpolation
+    variables(
+      default_variables.merge(
+        default_initfile: default_initfile
+      )
+    )
+
+    exec_command "#{localdir}/pio/bin/pio eventserver"
+    exec_procregex "#{localdir}/pio/assembly/pio-assembly.*"
+    exec_cwd '/var/log/eventserver'
+
+    subscribes :restart, 'template[eventserver.default]' unless provision_only?
+
+    manager node['pio']['service_manager']
+    action service_actions
+  end
+end

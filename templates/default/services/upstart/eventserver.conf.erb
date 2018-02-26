@@ -17,5 +17,5 @@ script
     # source default daemon settings
     . /etc/default/eventserver
 
-    exec <%= @home_prefix %>/pio/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
+    exec <%= @localdir %>/pio/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
 end script
