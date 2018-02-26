@@ -14,12 +14,14 @@
 # Standalone PIO installation
 #
 
+include_recipe 'git'
 include_recipe 'apt::default'
 include_recipe 'java::default'
 include_recipe 'rng-tools::default'
 
 include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
+include_recipe 'pio::python_modules'
 
 #######################
 # Install and build PIO
