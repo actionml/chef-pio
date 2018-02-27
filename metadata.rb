@@ -11,6 +11,7 @@ version          '0.2.0'
 chef_version '>= 12.6'
 
 # Supported platforms
+supports 'debian', '>= 8'
 supports 'ubuntu', '>= 14.04'
 supports 'centos', '>= 7'
 
