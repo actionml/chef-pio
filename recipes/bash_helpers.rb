@@ -37,6 +37,21 @@ edit_file 'PIO bin path' do
   action :insert
 end
 
+## PIO stack parts homes into profile
+#
+edit_file 'PIO apps homes' do
+  path    "#{pio_home}/.profile"
+
+  content <<-EHD.gsub(/^\s+/m, '')
+    HADOOP_HOME=#{localdir}/hadoop
+    HBASE_HOME=#{localdir}/hbase
+    SPARK_HOME=#{localdir}/spark
+    MAHOUT_HOME=#{localdir}/mahout
+  EHD
+
+  action :insert
+end
+
 ## Enable python 2.7 on the RHEL based systems (~/.profile)
 #
 edit_file 'Enable python2.7' do

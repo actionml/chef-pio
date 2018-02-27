@@ -15,9 +15,10 @@
 #
 
 include_recipe 'git'
-include_recipe 'apt::default'
-include_recipe 'java::default'
-include_recipe 'rng-tools::default'
+include_recipe 'apt'
+include_recipe 'java'
+include_recipe 'rng-tools'
+include_recipe 'chef-maven'
 
 include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
@@ -86,58 +87,72 @@ end
 # install maven
 package 'maven'
 
-# mahaout git source directory
+# mahout git source directory
 directory "#{localdir}/src/mahout" do
   user node['pio']['user']
   group node['pio']['user']
 end
 
-# # clone mahout repository
-# git mahoutdir do
-#   repository mahout['giturl']
-#   revision mahout['gitrev']
+# clone mahout repository
+git "#{localdir}/src/mahout" do
+  repository node['pio']['mahout']['giturl']
+  revision node['pio']['mahout']['gitrev']
 
-#   user node['pio']['system_user']
-#   group node['pio']['system_user']
+  user node['pio']['user']
+  group node['pio']['user']
 
-#   notifies :run, 'execute[build mahout]'
-#   action(mahout['gitupdate'] ? :sync : :checkout)
-# end
+  action(node['pio']['mahout']['gitupdate'] ? :sync : :checkout)
+end
 
-# execute 'build mahout' do
-#   cwd mahoutdir
+execute 'build mahout' do
+  cwd "#{localdir}/src/mahout"
 
-#   user node['pio']['system_user']
-#   group node['pio']['system_user']
+  user node['pio']['user']
+  group node['pio']['user']
 
-#   command 'mvn -q clean install -DskipTests'
-#   action :nothing
-# end
+  environment(
+    'HADOOP_HOME'   => default_variables[:hadoopdir],
+    'SPARK_VERSION' => node['pio']['spark']['version'],
+    'SCALA_VERSION' => node['pio']['scala']['version']
+  )
+  command 'make build'
+
+  subscribes :run, "git[#{localdir}/src/mahout]"
+  action :nothing
+end
+
+link "#{localdir}/mahout" do
+  to "#{localdir}/src/mahout"
+end
 
 ###############################
 # Install Universal Recommender
 ###############################
 
-# mahaout git source directory
+# UR git source directory
 directory "#{localdir}/src/universal-recommender" do
   user node['pio']['user']
   group node['pio']['user']
 end
 
-# # Clone pio repository
-# git urdir do
-#   repository ur['giturl']
-#   revision ur['gitrev']
+# Clone pio repository
+git "#{localdir}/src/universal-recommender" do
+  repository node['pio']['ur']['giturl']
+  revision node['pio']['ur']['gitrev']
 
-#   user node['pio']['user']
-#   group node['pio']['user']
+  user node['pio']['user']
+  group node['pio']['user']
 
-#   action(ur['gitupdate'] ? :sync : :checkout)
-# end
+  action(node['pio']['ur']['gitupdate'] ? :sync : :checkout)
+end
 
-# link "#{node['pio']['home']}/ur" do
-#   to urdir
-# end
+link "#{localdir}/universal-recommender" do
+  to "#{localdir}/src/universal-recommender"
+end
+
+link "#{pio_home}/ur" do
+  to "#{localdir}/universal-recommender"
+end
 
 ###############################
 # Write PIO configuration files
@@ -160,6 +175,7 @@ template 'pio-env.sh' do
 
   variables(
     default_variables.merge(
+      version: pio_version,
       es_clustername: node['pio']['conf']['es_clustername'],
       es_hosts: Array(node['pio']['conf']['es_hosts']),
       es_ports: Array(node['pio']['conf']['es_ports'])

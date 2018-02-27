@@ -36,8 +36,13 @@ default['pio']['ur']['gitupdate'] = true
 ## Mahout defaults
 #
 default['pio']['mahout']['giturl'] = 'https://github.com/actionml/mahout.git'
-default['pio']['mahout']['gitrev'] = 'ae984b8d3960bde18412da840fe5d9d8b75cdfcf'
+default['pio']['mahout']['gitrev'] = 'sparse-speedup-13.0'
 default['pio']['mahout']['gitupdate'] = true
+
+################
+# Scala defaults
+#
+default['pio']['scala']['version'] = '2.11.11'
 
 ## PIO configuration defaults
 #

@@ -16,7 +16,7 @@ SPARK_HOME=<%= @sparkdir %>
 #  It's not clear how pio exactly locates hadoop/hbase configuration files
 #  (In case of problems you can play with it, usually helps).
 #
-#  The following should work with 0.11.0-incubating:
+#  The following should work with <%= @version %>:
 #
 HADOOP_CONF_DIR=${PIO_FS_BASEDIR}/conf
 HBASE_CONF_DIR=${PIO_FS_BASEDIR}/conf

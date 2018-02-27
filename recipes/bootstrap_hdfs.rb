@@ -16,8 +16,6 @@
 
 # bootstrap-hdfs.sh helper
 template "#{pio_home}/bootstrap-hdfs.sh" do
-  user node['pio']['user']
-  group node['pio']['user']
   mode '0755'
 
   backup false
