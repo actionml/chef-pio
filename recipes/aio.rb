@@ -15,8 +15,8 @@
 # on a single machine.
 #
 
-include_recipe 'elasticsearch'
 include_recipe 'pio::default'
+include_recipe 'elasticsearch'
 
 ################################################################################
 #                      Install all PIO stack services
