@@ -48,7 +48,8 @@ module PIOCookbook
         hadoopdir: "#{localdir}/hadoop",
         nofile:    node['pio']['ulimit_nofile'],
         java_home: (node['java'] and node['java']['java_home']),
-        pio_home: pio_home
+        pio_home: pio_home,
+        mahout_repo: "#{localdir}/share/mahout-m2-repo"
       }
     end
 

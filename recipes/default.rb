@@ -87,6 +87,13 @@ end
 # install maven
 package 'maven'
 
+# Custom mahout repo to assist broken SBT build
+directory ::File.dirname(default_variables[:mahout_repo])
+directory default_variables[:mahout_repo] do
+  user node['pio']['user']
+  group node['pio']['user']
+end
+
 # mahout git source directory
 directory "#{localdir}/src/mahout" do
   user node['pio']['user']
@@ -115,14 +122,10 @@ execute 'build mahout' do
     'SPARK_VERSION' => node['pio']['spark']['version'],
     'SCALA_VERSION' => node['pio']['scala']['version']
   )
-  command 'make build'
+  command 'make build deploy'
 
   subscribes :run, "git[#{localdir}/src/mahout]"
   action :nothing
-end
-
-link "#{localdir}/mahout" do
-  to "#{localdir}/src/mahout"
 end
 
 ###############################
