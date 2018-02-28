@@ -32,18 +32,6 @@ ENV['JAVA_HOME'] = default_variables[:java_home]
     directory(dir) { recursive true }
   end
 
-## Create data subdirectories (under /opt/data)
-#
-(node['pio']['datasubdirs'] || []).each do |subdir|
-  directory File.join(node['pio']['datadir'], subdir) do
-    owner node['pio']['user']
-    group node['pio']['user']
-    mode  0_750
-    recursive true
-    action :create
-  end
-end
-
 ## Create PIO user
 #
 user(node['pio']['user']) do
@@ -54,6 +42,18 @@ user(node['pio']['user']) do
   manage_home false
 
   action :create
+end
+
+## Create data subdirectories (under /opt/data)
+#
+(node['pio']['datasubdirs'] || []).each do |subdir|
+  directory File.join(node['pio']['datadir'], subdir) do
+    owner node['pio']['user']
+    group node['pio']['user']
+    mode  0_750
+    recursive true
+    action :create
+  end
 end
 
 ## Create real home directory for PIO user
@@ -76,7 +76,7 @@ end
 ## Link data subdirs into home
 #
 (node['pio']['datasubdirs'] || []).each do |path|
-  link File.join(pio_home, path) do
+  link File.join(pio_home, File.basename(path)) do
     to File.join(node['pio']['datadir'], path)
   end
 end

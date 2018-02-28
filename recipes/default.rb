@@ -84,9 +84,6 @@ end
 # Install and build Mahout
 ##########################
 
-# install maven
-package 'maven'
-
 # Custom mahout repo to assist broken SBT build
 directory ::File.dirname(default_variables[:mahout_repo])
 directory default_variables[:mahout_repo] do

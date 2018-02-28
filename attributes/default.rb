@@ -6,7 +6,7 @@ default['pio']['ulimit_nofile']  = 64_000
 
 default['pio']['localdir']    = '/usr/local'
 default['pio']['datadir']     = '/opt/data'
-default['pio']['datasubdirs'] = []
+default['pio']['datasubdirs'] = ['big-data']
 
 default['pio']['service_manager'] = nil
 
