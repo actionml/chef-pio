@@ -23,7 +23,7 @@ module PIOCookbook
     property :comment, String, name_property: true
     property :content, String
     property :regex, [String, Regexp],
-             coerce: proc { |v| v.is_a?(String) ? Regexp.quote(v) : v }
+             coerce: proc { |v| v.is_a?(String) ? /#{Regexp.quote(v)}/ : v }
 
     property :comment_style, [
       :shell
@@ -106,14 +106,14 @@ module PIOCookbook
     end
 
     # Raw action: doesn't write comment tags.
-    action :replace_line do
-      lines_found = fed.search(Regexp.new(new_content))
+    action :replace_lines do
+      lines_found = fed.search(new_resource.regex)
 
-      unless lines_found.empty?
+      if !lines_found.empty? && lines_found.any? { |l| l.chomp != new_content }
         fed.search_file_replace_line(new_resource.regex, new_content + "\n")
 
         if fed.unwritten_changes?
-          converge_by("Replacing line matched with #{new_resource.regex} "\
+          converge_by("Replacing lines matched with #{new_resource.regex} "\
                       "in #{new_resource.path} file") do
             fed.write_file
           end

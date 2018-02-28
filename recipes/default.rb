@@ -163,9 +163,9 @@ edit_file 'replace resolvers' do
   variables(default_variables)
   content %(resolvers += "Local Repository" at "file://#{variables[:mahout_repo]}")
 
-  regex 'resolvers += "Local Repository"'
+  regex(/resolvers +\+= +"Local Repository"/)
 
-  action :replace_line
+  action :replace_lines
 end
 
 ###############################

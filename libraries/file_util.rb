@@ -60,7 +60,7 @@ module PIOCookbook
 
   module ChefUtilFileEdit
     def search(regex)
-      editor.lines.select { |line| line =~ regex}
+      editor.lines.select { |line| line =~ regex }
     end
 
     def insert_content_if_no_match(regex_start, regex_end, content)
