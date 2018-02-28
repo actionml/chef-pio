@@ -7,17 +7,13 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name: ubuntu-14.04
-    driver_config:
-      image: ubuntu:14.04
-      platform: ubuntu
   - name: ubuntu-16.04
     driver_config:
       image: ubuntu:16.04
       platform: ubuntu
-  - name: centos-7.2
+  - name: centos-7.4
     driver_config:
-      image: centos:7.2.1511
+      image: centos:7.4.1708
       platform: centos
 
 suites:

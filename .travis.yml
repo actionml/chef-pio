@@ -2,19 +2,17 @@ sudo: required
 language: ruby
 services: docker
 
-script:
-  # no actual tests (chefspec might be implemented in future)
-  - /bin/true
+stages:
+  - name: deploy
+    if: tag =~ ^v[0-9]
 
-before_deploy:
-  # Test-kitchen run
-  - cp -f .travis-kitchen.yml .kitchen.yml
-  - travis_wait 40 bundle exec kitchen converge ubuntu-1604
-  - bundle exec kitchen verify ubuntu-1604
-
-deploy:
-  provider: script
-  script: bash .publish.sh
-  on:
-    tags: true
-    condition: $TRAVIS_TAG =~ ^v[0-9]
+jobs:
+  include:
+    - 
+      if: (branch = master) AND (type IN (pull_request))
+      script:
+        - cp -f .travis-kitchen.yml .kitchen.yml
+        - travis_wait 40 bundle exec kitchen converge ubuntu-1604
+        - bundle exec kitchen verify ubuntu-1604
+    - stage: deploy
+      script: echo We do deploy
