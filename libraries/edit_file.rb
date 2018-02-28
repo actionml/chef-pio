@@ -22,6 +22,8 @@ module PIOCookbook
     property :path, String, required: true
     property :comment, String, name_property: true
     property :content, String
+    property :regex, [String, Regexp],
+             coerce: proc { |v| v.is_a?(String) ? Regexp.quote(v) : v }
 
     property :comment_style, [
       :shell
@@ -42,6 +44,11 @@ module PIOCookbook
           a.assertion { new_resource.content.nil? ^ new_resource.source.nil? }
           a.failure_message "content and source properties are mutually exclusive (#{new_resource})"
           a.whyrun "content and source properties are mutually exclusive (#{new_resource})"
+          a.block_action!
+        end
+
+        requirements.assert(:replace_line) do |a|
+          a.assertion { new_resource.regex.nil? }
           a.block_action!
         end
         super
@@ -66,7 +73,7 @@ module PIOCookbook
 
       def new_content
         @new_content ||= begin
-          new_resource.content ? new_resource.content : IO.binread(rendered_tempfile.path)
+          new_resource.content ? new_resource.content.chomp : IO.binread(rendered_tempfile.path).chomp
         end
       end
 
@@ -85,15 +92,31 @@ module PIOCookbook
       if multiline?
         fed.insert_content_if_no_match(/#{Regexp.quote(header)}/,
                                        /#{Regexp.quote(footer)}/,
-                                       [header, new_content.chomp, footer].join("\n"))
+                                       [header, new_content, footer].join("\n"))
       else
         fed.insert_line_if_no_match(/#{Regexp.quote(comment_string)}/,
-                                    [comment_string, new_content.chomp].join("\n"))
+                                    [comment_string, new_content].join("\n"))
       end
 
       if fed.unwritten_changes?
         converge_by("Inserting content into #{new_resource.path} file") do
           fed.write_file
+        end
+      end
+    end
+
+    # Raw action: doesn't write comment tags.
+    action :replace_line do
+      lines_found = fed.search(Regexp.new(new_content))
+
+      unless lines_found.empty?
+        fed.search_file_replace_line(new_resource.regex, new_content + "\n")
+
+        if fed.unwritten_changes?
+          converge_by("Replacing line matched with #{new_resource.regex} "\
+                      "in #{new_resource.path} file") do
+            fed.write_file
+          end
         end
       end
     end

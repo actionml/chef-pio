@@ -157,6 +157,20 @@ link "#{pio_home}/ur" do
   to "#{localdir}/universal-recommender"
 end
 
+## Fix build.sbt!
+#
+edit_file 'replace resolvers' do
+  path    "#{localdir}/universal-recommender/build.sbt"
+
+  # init vars before content
+  variables(default_variables)
+  content %(resolvers += "Local Repository" at "file://#{variables[:mahout_repo]}")
+
+  regex 'resolvers += "Local Repository"'
+
+  action :replace_line
+end
+
 ###############################
 # Write PIO configuration files
 ###############################

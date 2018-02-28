@@ -59,6 +59,10 @@ module PIOCookbook
   end
 
   module ChefUtilFileEdit
+    def search(regex)
+      editor.lines.select { |line| line =~ regex}
+    end
+
     def insert_content_if_no_match(regex_start, regex_end, content)
       @changes = (editor.append_content_if_missing(regex_start, regex_end, content) > 0) || @changes
     end
