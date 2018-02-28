@@ -15,6 +15,11 @@
 ::Chef::Recipe.send(:include, PIOCookbook::HelpersMixin)
 ::Chef::Resource.send(:include, PIOCookbook::HelpersMixin)
 
+# Convert service_manager to symbol
+if node['pio']['service_manager']
+  node.normal['pio']['service_manager'] = node['pio']['service_manager'].to_sym
+end
+
 ###########################################################
 # Data directories, PIO user configuration and FS structure
 ###########################################################
