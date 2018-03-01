@@ -16,17 +16,10 @@
 #
 
 include_recipe 'pio::default'
-include_recipe 'elasticsearch'
+include_recipe 'pio::elasticsearch'
 
 ################################################################################
 #                      Install all PIO stack services
-
-#######################
-# ElasticSearch service
-#######################
-elasticsearch_service 'elasticsearch' do
-  action [:configure] | service_actions
-end
 
 ######################
 # Hadoop, HBase, Spark
