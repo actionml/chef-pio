@@ -11,13 +11,14 @@ platforms:
     driver_config:
       image: ubuntu:16.04
       platform: ubuntu
+      provision_command: apt-get -q install locales && locale-gen en_US.UTF-8
   - name: centos-7.4
     driver_config:
       image: centos:7.4.1708
       platform: centos
 
 suites:
-  - name: default
+  - name: travis
     run_list:
       - recipe[pio::aio]
     attributes:

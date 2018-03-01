@@ -12,7 +12,7 @@ jobs:
       if: (branch = master) AND (type IN (pull_request))
       script:
         - cp -f .travis-kitchen.yml .kitchen.yml
-        - travis_wait 40 bundle exec kitchen converge ubuntu-1604
+        - travis_wait 30 bundle exec kitchen converge ubuntu-1604
         - bundle exec kitchen verify ubuntu-1604
     - stage: deploy
       script: echo We do deploy
