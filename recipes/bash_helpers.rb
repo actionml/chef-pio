@@ -52,20 +52,6 @@ edit_file 'PIO apps homes' do
   action :insert
 end
 
-## Enable python 2.7 on the RHEL based systems (~/.profile)
-#
-edit_file 'Enable python2.7' do
-  # set variables first since we use them in other properties
-  variables(default_variables)
-
-  path    "#{variables[:pio_home]}/.profile"
-  content '. /opt/rh/python27/enable'
-
-  only_if { platform_family?('rhel') }
-
-  action :insert
-end
-
 ## Populate ~/.bashrc
 #
 edit_file 'Handy AML bashrc aliases' do
