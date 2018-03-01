@@ -46,8 +46,8 @@ default['pio']['scala']['version'] = '2.11.11'
 
 ## PIO configuration defaults
 #
-default['pio']['conf']['event_port'] = 7070
-default['pio']['conf']['prediction_port'] = 8000
+default['pio']['conf']['eventserver_port'] = 7070
+default['pio']['conf']['predictionserver_port'] = 8000
 
 default['pio']['conf']['es_clustername'] = 'elasticsearch'
 default['pio']['conf']['es_hosts'] = %w[127.0.0.1]

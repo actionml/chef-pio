@@ -218,18 +218,12 @@ end
 ##############################################
 
 unless node.recipe?('pio::aio')
-  # Choose default file location
-  default_initfile = case node['platform_family']
-                     when 'debian'
-                       '/etc/default/eventserver'
-                     when 'rhel'
-                       '/etc/sysconfig/eventserver'
-                     else
-                       "#{localdir}/pio/conf/default.rc"
-                     end
+  environment_file =
+    value_for_platform_family(
+      'debian' => '/etc/default/pio',
+      'rhel'   => '/etc/sysconfig/pio'
+    )
 
-  ## At the moment the only way to control eventserver log name and location is chdir!!!
-  #
   # Create eventserver log directory
   directory '/var/log/eventserver' do
     user node['pio']['user']
@@ -239,9 +233,13 @@ unless node.recipe?('pio::aio')
   end
 
   # Generate default config
-  template 'eventserver.default' do
-    source 'services/eventserver.default.erb'
-    path default_initfile
+  template 'pio.default' do
+    source 'services/pio.default.erb'
+    path environment_file
+    variables(
+      eventserver_port: node['pio']['conf']['eventserver_port'],
+      predictionserver_port: node['pio']['conf']['predictionserver_port']
+    )
     mode 0_644
   end
 
@@ -253,14 +251,18 @@ unless node.recipe?('pio::aio')
 
     # set vars before, since we use it in interpolation
     variables(
-      default_variables.merge(
-        default_initfile: default_initfile
+      apache_vars.merge(
+        app: 'pio',
+        environment_file: environment_file,
+        logdir: '/var/log/eventserver'
       )
     )
 
-    exec_command "#{localdir}/pio/bin/pio eventserver"
-    exec_procregex "#{localdir}/pio/assembly/pio-assembly.*"
-    exec_cwd '/var/log/eventserver'
+    exec_command "#{variables[:piodir]}/bin/pio eventserver"
+    exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
+    exec_env(
+      'PIO_LOG_DIR' => variables[:logdir]
+    )
 
     subscribes :restart, 'template[eventserver.default]' unless provision_only?
 
