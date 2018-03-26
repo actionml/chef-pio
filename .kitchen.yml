@@ -19,5 +19,4 @@ suites:
       - recipe[pio::aio]
     attributes:
       pio:
-        service_manager: auto
         provision_only: true

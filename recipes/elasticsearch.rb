@@ -17,7 +17,7 @@ elasticsearch_service 'elasticsearch' do
   end
 
   action [:configure] | service_actions
-  not_if { docker? }
+  not_if { docker? || node['pio']['provision_only'] }
 end
 
 # Use execute service_manager to start the ElasticSearch

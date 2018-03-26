@@ -8,13 +8,14 @@ default['pio']['localdir']    = '/usr/local'
 default['pio']['datadir']     = '/opt/data'
 default['pio']['datasubdirs'] = ['big-data']
 
-default['pio']['service_manager'] = nil
+# Service manager uses the auto provider if not set or nil
+# default['pio']['service_manager'] =
 
 default['pio']['apache_mirror'] = 'http://apache.mirrors.tds.net'
 
 # PIO system user and home (the former can be omitted)
 default['pio']['user'] = 'aml'
-default['pio']['home'] = ''
+# default['pio']['home'] =
 
 ######
 # PIO git repository and revision
