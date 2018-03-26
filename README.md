@@ -1,4 +1,6 @@
 
+[![Travis](https://img.shields.io/travis/actionml/chef-pio.svg)](https://travis-ci.org/actionml/chef-pio)
+
 # PredictionIO chef cookbook
 
 PredictionIO is an open source Machine Learning Server built on top of state-of-the-art open source stack for developers and data scientists create predictive engines for any machine learning task. PredictionIO cookbook aims to provide two variants of installation  **standalone** and **all-in-one** (**AIO**).
