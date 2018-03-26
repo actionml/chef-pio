@@ -15,7 +15,7 @@ jobs:
         - bundle exec kitchen verify ubuntu-1604
     - stage: deploy
       script: |
-        curl -s \
+        curl -u $TOKEN: -s \
           --header "Content-Type: application/json" \
           --data "{\"build_parameters\": {\"release_tag\": \"$TRAVIS_TAG\"}}" \
           --request POST $PUBLISH_URL > /dev/null
