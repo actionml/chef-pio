@@ -10,7 +10,7 @@ Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
 Environment=DAEMON_ARGS=
 LimitNOFILE=<%= @nofile %>
-ExecStart=<%= @home_prefix %>/spark/sbin/start-spark.sh worker $DAEMON_ARGS
+ExecStart=<%= @appdir %>/sbin/start-spark.sh worker $DAEMON_ARGS
 
 [Install]
 WantedBy=multi-user.target

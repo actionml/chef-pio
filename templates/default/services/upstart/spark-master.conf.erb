@@ -4,12 +4,12 @@ start on (starting spark-worker or (filesystem and net-device-up IFACE!=lo))
 stop on runlevel [!2345]
 
 kill timeout 20
-setuid aml
-setgid hadoop
+setuid <%= @user %>
+setgid <%= @group %>
 
 limit nofile <%= @nofile %> <%= @nofile %>
 
 env JAVA_HOME=<%= @java_home %>
 env DAEMON_ARGS=
 
-exec <%= @home_prefix %>/spark/sbin/start-spark.sh master $DAEMON_ARGS
+exec <%= @appdir %>/sbin/start-spark.sh master $DAEMON_ARGS

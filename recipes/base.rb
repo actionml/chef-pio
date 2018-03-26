@@ -2,7 +2,7 @@
 # Cookbook Name:: pio
 # Recipe:: base
 #
-# Copyright 2016 ActionML LLC
+# Copyright 2016-2018 ActionML LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -10,95 +10,104 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
-include_recipe 'java::default'
-
-## Make JAVA_HOME available for the chef-client process (worked before chef13)
-#  Required by scripts started by chef-client (ex. make-distribution.sh)
+## Extend recipes and resource with helper methods
 #
-ENV['JAVA_HOME'] = node['java']['java_home']
+::Chef::Recipe.send(:include, PIOCookbook::HelpersMixin)
+::Chef::Resource.send(:include, PIOCookbook::HelpersMixin)
 
-## Create "aml" user and setup default directory structure
-#
-
-# Create lib directory
-directory node['pio']['libdir'] do
-  recursive true
+# Convert service_manager to symbol
+if node['pio']['service_manager']
+  node.normal['pio']['service_manager'] = node['pio']['service_manager'].to_sym
 end
 
-user node['pio']['aml']['user'] do
+###########################################################
+# Data directories, PIO user configuration and FS structure
+###########################################################
+
+## Make JAVA_HOME available for the chef-client process (worked before chef13)
+#
+ENV['JAVA_HOME'] = default_variables[:java_home]
+
+## Create app root directory (/usr/local) and data directory (/opt/data)
+#
+[
+  localdir, datadir
+]
+  .each do |dir|
+    directory(dir) { recursive true }
+  end
+
+## Create PIO user
+#
+user(node['pio']['user']) do
   comment 'PredictionIO user'
-  home "/home/#{node['pio']['aml']['user']}"
+  home  pio_home
   shell '/bin/bash'
   system true
   manage_home false
 
-  not_if { node['pio']['aml']['user'] == 'root' }
   action :create
 end
 
-# AML project directories
-%w(big-data).each do |dir|
-  directory File.join(node['pio']['libdir'], dir) do
-    owner node['pio']['aml']['user']
-    group node['pio']['aml']['user']
-    mode '0750'
-
+## Create data subdirectories (under /opt/data)
+#
+(node['pio']['datasubdirs'] || []).each do |subdir|
+  directory File.join(node['pio']['datadir'], subdir) do
+    owner node['pio']['user']
+    group node['pio']['user']
+    mode  0_750
     recursive true
     action :create
   end
 end
 
-## Create real home directory and link it to /home/$user
+## Create real home directory for PIO user
 #
-directory File.join(node['pio']['libdir'], 'aml') do
-  owner node['pio']['aml']['user']
-  group node['pio']['aml']['user']
-  mode '0750'
+directory pio_homedir do
+  owner node['pio']['user']
+  group node['pio']['user']
+  mode  0_750
   action :create
 end
 
-link "/home/#{node['pio']['aml']['user']}" do
-  to File.join(node['pio']['libdir'], 'aml')
-
-  not_if { node['pio']['aml']['user'] == 'root' }
-  not_if { File.exist?("/home/#{node['pio']['aml']['user']}") }
+## Link /home/#{user} to the real home directory location (if required)
+#
+link pio_home do
+  to pio_homedir
+  only_if { pio_home != pio_homedir }
   action :create
 end
 
-## lib links
-%w(big-data).each do |path|
-  link "#{node['pio']['aml']['home']}/#{path}" do
-    to File.join(node['pio']['libdir'], path)
+## Link data subdirs into home
+#
+(node['pio']['datasubdirs'] || []).each do |path|
+  link File.join(pio_home, File.basename(path)) do
+    to File.join(node['pio']['datadir'], path)
   end
 end
 
-# Paswordless sudo for aml user
-sudo 'aml user' do
-  name node['pio']['aml']['user']
-  user node['pio']['aml']['user']
-  nopasswd true
-end
-
-# Generate skeleton files, since manage home directory creation
-%w(.bashrc .bash_logout .profile).each do |fname|
+## Generate skeleton files, since manage home directory creation
+#
+%w[.bashrc .bash_logout .profile].each do |fname|
   skel = "/etc/skel/#{fname}"
 
-  file "#{node['pio']['aml']['home']}/#{fname}" do
-    owner node['pio']['aml']['user']
-    group node['pio']['aml']['user']
+  file File.join(pio_home, fname) do
+    owner node['pio']['user']
+    group node['pio']['user']
 
-    content lazy { File.read(skel) }
+    content(lazy { File.read(skel) })
+
     only_if { File.exist?(skel) }
     action :create_if_missing
   end
 end
 
-## Create hadoop user, since we manage "only" installation from source.
-#
+#################################
+# Create managed users and groups
+#################################
 
 user 'hadoop' do
-  home  "#{node['pio']['home_prefix']}/hadoop"
+  home  File.join(node['pio']['localdir'], 'hadoop')
   shell '/bin/false'
   system true
   manage_home false
@@ -106,28 +115,30 @@ user 'hadoop' do
   action :create
 end
 
-
 group 'hadoop' do
   action :modify
-  members node['pio']['aml']['user']
+  members node['pio']['user']
   append true
 end
 
+################################
+# Sudo configuration and ulimits
+################################
+
+## Paswordless sudo for aml user
+#
+sudo 'aml user' do
+  name node['pio']['user']
+  user node['pio']['user']
+  nopasswd true
+end
 
 ## Limits
 #
-user_ulimit node['pio']['aml']['user'] do
+user_ulimit node['pio']['user'] do
   filehandle_limit node['pio']['ulimit_nofile']
 end
 
 user_ulimit 'hadoop' do
   filehandle_limit node['pio']['hadoop']['nofile']
-end
-
-
-## Install rng-tools to increase entropy of /dev/random, the
-# since entropy pool level is very low on cloud systemd.
-#
-package 'rng-tools' do
-  action :install
 end

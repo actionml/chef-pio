@@ -9,13 +9,12 @@ setgid <%= @group %>
 
 limit nofile <%= @nofile %> <%= @nofile %>
 
-env PIO_EVENTSERVER_PORT=7070
 env JAVA_HOME=<%= @java_home %>
-env PIO_LOG_DIR=/var/log/eventserver
+env PIO_LOG_DIR<%= @logdir %>
 
 script
     # source default daemon settings
-    . /etc/default/eventserver
+    . <%= @environment_file %>
 
-    exec <%= @home_prefix %>/pio/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
+    exec <%= @piodir %>/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
 end script

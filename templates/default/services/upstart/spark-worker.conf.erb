@@ -4,12 +4,12 @@ start on started spark-master
 stop on stopped spark-master
 
 kill timeout 20
-setuid aml
-setgid hadoop
+setuid <%= @user %>
+setgid <%= @group %>
 
 limit nofile <%= @nofile %> <%= @nofile %>
 
 env JAVA_HOME=<%= @java_home %>
 env DAEMON_ARGS=
 
-exec <%= @home_prefix %>/spark/sbin/start-spark.sh worker $DAEMON_ARGS
+exec <%= @appdir %>/sbin/start-spark.sh worker $DAEMON_ARGS

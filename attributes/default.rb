@@ -1,56 +1,73 @@
-## Base files, directories and install method
+######
+# Base cookbook attributes
 #
-default['pio']['aio'] = false
 default['pio']['provision_only'] = false
-default['pio']['bundle'] = 'aml'
-default['pio']['pypi_pio_version'] = '0.9.8'
-default['pio']['ulimit_nofile'] = 64000
+default['pio']['ulimit_nofile']  = 64_000
 
-default['pio']['home_prefix'] = '/usr/local'
-default['pio']['libdir'] = '/opt/data'
-default['pio']['apache_mirror'] = node['ark']['apache_mirror']
+default['pio']['localdir']    = '/usr/local'
+default['pio']['datadir']     = '/opt/data'
+default['pio']['datasubdirs'] = ['big-data']
 
-default['pio']['service_manager'] = 'auto'
+default['pio']['service_manager'] = nil
 
-## AML install method (bundle aml)
+default['pio']['apache_mirror'] = 'http://apache.mirrors.tds.net'
+
+# PIO system user and home (the former can be omitted)
+default['pio']['user'] = 'aml'
+default['pio']['home'] = ''
+
+######
+# PIO git repository and revision
 #
-default['pio']['aml']['user'] = 'aml'
+default['pio']['giturl'] = 'https://github.com/apache/incubator-predictionio.git'
+default['pio']['gitrev'] = 'v0.12.0-incubating'
+default['pio']['gitupdate'] = true
 
-# conditional home
-if node['pio']['aml']['user'] == 'root'
-  default['pio']['aml']['home'] = '/root'
-else
-  default['pio']['aml']['home'] = "/home/#{node['pio']['aml']['user']}"
-end
+# pio pip package
+default['pio']['pip_package_version'] = '0.9.8'
 
-default['pio']['aml']['giturl'] = 'https://github.com/apache/incubator-predictionio.git'
-default['pio']['aml']['gitrev'] = 'v0.11.0-incubating'
-default['pio']['aml']['gitupdate'] = true
-
-## Universal recommender defaults
+######
+# Universal recommender defaults
 #
 default['pio']['ur']['giturl'] = 'https://github.com/actionml/universal-recommender.git'
-default['pio']['ur']['gitrev'] = '0.6.0'
+default['pio']['ur']['gitrev'] = '0.7.0'
 default['pio']['ur']['gitupdate'] = true
 
-## !!DEPRECATED!! Mahout defaults
+## Mahout defaults
 #
-#default['pio']['mahout']['giturl'] = 'https://github.com/apache/mahout.git'
-#default['pio']['mahout']['gitrev'] = '00a2883ec69b0807a5486c61dfcc7ef27f35ddc6'
-#default['pio']['mahout']['gitupdate'] = true
+default['pio']['mahout']['giturl'] = 'https://github.com/actionml/mahout.git'
+default['pio']['mahout']['gitrev'] = 'sparse-speedup-13.0'
+default['pio']['mahout']['gitupdate'] = true
+
+################
+# Scala defaults
+#
+default['pio']['scala']['version'] = '2.11.11'
 
 ## PIO configuration defaults
 #
-default['pio']['conf']['event_port'] = 7070
-default['pio']['conf']['prediction_port'] = 8000
+default['pio']['conf']['eventserver_port'] = 7070
+default['pio']['conf']['predictionserver_port'] = 8000
 
 default['pio']['conf']['es_clustername'] = 'elasticsearch'
-default['pio']['conf']['es_hosts'] = %w(127.0.0.1)
+default['pio']['conf']['es_hosts'] = %w[127.0.0.1]
 ## es_ports can be a list of ports corresponding hosts,
 #  if default default port 9300 is used, this list can be omitted.
 # default['pio']['conf']['es_ports'] = %w()
 
 default['pio']['conf']['namenode_host'] = '127.0.0.1'
 default['pio']['conf']['namenode_port'] = 9000
-default['pio']['conf']['zookeeper_hosts'] = %w(127.0.0.1)
+default['pio']['conf']['zookeeper_hosts'] = %w[127.0.0.1]
 default['pio']['conf']['zookeeper_port'] = 2181
+
+########################
+# HDFS initial structure
+#
+# path(directory) user mode group
+#
+default['pio']['hdfs_structure'] = [
+  ['/hbase', 'hadoop', '0755'],
+  ['/user'],
+  ["/user/#{node['pio']['user']}", node['pio']['user'], '0755'],
+  ['/models', node['pio']['user'], '0755']
+]

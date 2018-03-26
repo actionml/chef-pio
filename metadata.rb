@@ -6,14 +6,14 @@ description      'Installs/Configures PIO'
 long_description 'Installs/Configures PredictionIO an open source Machine Learning Server '\
                  'built on top of state-of-the-art open source stack for developers and '\
                  'data scientists create predictive engines for any machine learning task.'
-version          '0.1.3'
+version          '0.2.0'
 
-chef_version ">= 12"
+chef_version '>= 12.6'
 
 # Supported platforms
+supports 'debian', '>= 8'
 supports 'ubuntu', '>= 14.04'
 supports 'centos', '>= 7'
-
 
 # Cookbook dependencies
 depends 'apt'
@@ -24,6 +24,7 @@ depends 'ark'
 depends 'sudo'
 depends 'poise-python'
 depends 'ulimit'
-depends 'elasticsearch', '= 2.5.0'
+depends 'elasticsearch', '~> 3.4.4'
 depends 'service_manager'
 depends 'rng-tools'
+depends 'chef-maven', '~> 0.2.6'

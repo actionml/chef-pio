@@ -9,7 +9,7 @@ User=<%= @user %>
 Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
 LimitNOFILE=<%= @nofile %>
-ExecStart=<%= @home_prefix %>/hadoop/bin/hdfs datanode
+ExecStart=<%= @appdir %>/bin/hdfs datanode
 
 [Install]
 WantedBy=multi-user.target

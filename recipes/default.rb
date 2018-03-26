@@ -2,7 +2,7 @@
 # Cookbook Name:: pio
 # Recipe:: default
 #
-# Copyright 2016 ActionML LLC
+# Copyright 2016-2018 ActionML LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -10,45 +10,263 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 
-
-node.default['pio']['conf']['spark_home'] = "#{node['pio']['home_prefix']}/spark"
-node.default['ark']['prefix_root'] = node['pio']['home_prefix']
-node.default['ark']['prefix_bin'] = "#{node['pio']['home_prefix']}/bin"
-node.default['ark']['prefix_home'] = node['pio']['home_prefix']
-
-## Apt update && upgrade (apt cookbook resource notified)
 #
-execute 'apt-get upgrade' do
-  command 'apt-get -fuy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade'
-  only_if { apt_installed? }
+# Standalone PIO installation
+#
 
-  environment(
-    'DEBIAN_FRONTEND' => 'noninteractive'
-  )
-
-  action :run
-  notifies :run, 'execute[apt-get update]', :before
-end
-
-include_recipe 'apt::default'
-include_recipe 'java::default'
-
-# install rng-tools to increase entropy pool capacity
-include_recipe 'rng-tools::default'
+include_recipe 'git'
+include_recipe 'apt'
+include_recipe 'java'
+include_recipe 'rng-tools'
+include_recipe 'chef-maven'
 
 include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
-include_recipe 'pio::hadoop_install'
-include_recipe 'pio::spark_install'
 include_recipe 'pio::python_modules'
-include_recipe 'pio::pio_git_install'
 
-# Don't install UR on production system
-include_recipe 'pio::ur_git_install' if node['pio']['aio']
+#######################
+# Install and build PIO
+#######################
 
-# !!DEPRECATED!! Mahaout installation is not required anymore
-# include_recipe 'pio::mahout_git_install'
-include_recipe 'pio::conf'
+# pio git source directory
+directory "#{localdir}/src/PredictionIO" do
+  user node['pio']['user']
+  group node['pio']['user']
+end
 
-# Don't start eventserver on AIO system
-include_recipe 'pio::eventserver' unless node['pio']['aio']
+# fetch pio git source
+git "#{localdir}/src/PredictionIO" do
+  repository node['pio']['giturl']
+  revision   node['pio']['gitrev']
+
+  user node['pio']['user']
+  group node['pio']['user']
+
+  action(node['pio']['gitupdate'] ? :sync : :checkout)
+end
+
+# make distribution (runs sbt built)
+execute './make-distribution.sh' do
+  cwd "#{localdir}/src/PredictionIO"
+  command 'bash ./make-distribution.sh'
+
+  user node['pio']['user']
+  group node['pio']['user']
+
+  subscribes :run, "git[#{localdir}/src/PredictionIO]",
+             :immediately
+
+  environment('HOME' => pio_home)
+  creates "#{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz"
+
+  action :nothing
+end
+
+# copy the built pio distribution
+execute 'untar pio artifact' do
+  cwd localdir
+  command "tar xzf #{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz"
+
+  subscribes :run, 'execute[./make-distribution.sh]', :immediately
+  action :nothing
+end
+
+# populate links to pio application directory
+link "#{localdir}/pio" do
+  to "#{localdir}/PredictionIO-#{pio_version}"
+end
+
+link "#{pio_home}/pio" do
+  to "#{localdir}/pio"
+end
+
+##########################
+# Install and build Mahout
+##########################
+
+# Custom mahout repo to assist broken SBT build
+directory ::File.dirname(default_variables[:mahout_repo])
+directory default_variables[:mahout_repo] do
+  user node['pio']['user']
+  group node['pio']['user']
+end
+
+# mahout git source directory
+directory "#{localdir}/src/mahout" do
+  user node['pio']['user']
+  group node['pio']['user']
+end
+
+# clone mahout repository
+git "#{localdir}/src/mahout" do
+  repository node['pio']['mahout']['giturl']
+  revision node['pio']['mahout']['gitrev']
+
+  user node['pio']['user']
+  group node['pio']['user']
+
+  action(node['pio']['mahout']['gitupdate'] ? :sync : :checkout)
+end
+
+execute 'build mahout' do
+  cwd "#{localdir}/src/mahout"
+
+  user node['pio']['user']
+  group node['pio']['user']
+
+  environment(
+    'HADOOP_HOME'   => default_variables[:hadoopdir],
+    'SPARK_VERSION' => node['pio']['spark']['version'],
+    'SCALA_VERSION' => node['pio']['scala']['version']
+  )
+  command 'make build deploy'
+
+  subscribes :run, "git[#{localdir}/src/mahout]"
+  action :nothing
+end
+
+###############################
+# Install Universal Recommender
+###############################
+
+# UR git source directory
+directory "#{localdir}/src/universal-recommender" do
+  user node['pio']['user']
+  group node['pio']['user']
+end
+
+# Clone pio repository
+git "#{localdir}/src/universal-recommender" do
+  repository node['pio']['ur']['giturl']
+  revision node['pio']['ur']['gitrev']
+
+  user node['pio']['user']
+  group node['pio']['user']
+
+  action(node['pio']['ur']['gitupdate'] ? :sync : :checkout)
+end
+
+link "#{localdir}/universal-recommender" do
+  to "#{localdir}/src/universal-recommender"
+end
+
+link "#{pio_home}/ur" do
+  to "#{localdir}/universal-recommender"
+end
+
+## Fix build.sbt!
+#
+edit_file 'replace resolvers' do
+  path    "#{localdir}/universal-recommender/build.sbt"
+
+  # init vars before content
+  variables(default_variables)
+  content %(resolvers += "Local Repository" at "file://#{variables[:mahout_repo]}")
+
+  regex(/resolvers +\+= +"Local Repository"/)
+
+  action :replace_lines
+end
+
+###############################
+# Write PIO configuration files
+###############################
+
+# Create pio config directories for  services: hadoop and hbase
+%w[
+  hadoop
+  hbase
+]
+  .each do |app|
+    directory "#{localdir}/pio/conf/#{app}"
+  end
+
+# generate pio-env.sh
+template 'pio-env.sh' do
+  path   "#{localdir}/pio/conf/pio-env.sh"
+  source 'pio-env.sh.erb'
+  mode   0_644
+
+  variables(
+    default_variables.merge(
+      version: pio_version,
+      es_clustername: node['pio']['conf']['es_clustername'],
+      es_hosts: Array(node['pio']['conf']['es_hosts']),
+      es_ports: Array(node['pio']['conf']['es_ports'])
+    )
+  )
+
+  action :create
+end
+
+# generate hadoop/hbase config files for pio
+%w[
+  hadoop/core-site.xml
+  hbase/hbase-site.xml
+]
+  .each do |path|
+    template "#{localdir}/pio/conf/#{path}" do
+      source "#{::File.basename(path)}.erb"
+      mode '0644'
+
+      variables(default_variables)
+    end
+  end
+
+##############################################
+# Start PIO Event Server on production systems
+##############################################
+
+unless node.recipe?('pio::aio')
+  environment_file =
+    value_for_platform_family(
+      'debian' => '/etc/default/pio',
+      'rhel'   => '/etc/sysconfig/pio'
+    )
+
+  # Create eventserver log directory
+  directory '/var/log/eventserver' do
+    user node['pio']['user']
+    group node['pio']['user']
+    mode '0755'
+    action :create
+  end
+
+  # Generate default config
+  template 'pio.default' do
+    source 'services/pio.default.erb'
+    path environment_file
+    variables(
+      eventserver_port: node['pio']['conf']['eventserver_port'],
+      predictionserver_port: node['pio']['conf']['predictionserver_port']
+    )
+    mode 0_644
+  end
+
+  # EventServer service
+  service_manager 'eventserver' do
+    supports status: true, reload: false
+    user  'aml'
+    group 'hadoop'
+
+    # set vars before, since we use it in interpolation
+    variables(
+      apache_vars.merge(
+        app: 'pio',
+        environment_file: environment_file,
+        logdir: '/var/log/eventserver'
+      )
+    )
+
+    exec_command "#{variables[:piodir]}/bin/pio eventserver"
+    exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
+    exec_env(
+      'PIO_LOG_DIR' => variables[:logdir]
+    )
+
+    subscribes :restart, 'template[eventserver.default]' unless provision_only?
+
+    manager node['pio']['service_manager']
+    action service_actions
+  end
+end
