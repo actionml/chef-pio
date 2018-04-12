@@ -15,8 +15,8 @@ default['pio']['hadoop']['url'] =
 #######
 # HBase
 #
-default['pio']['hbase']['version']  = '1.4.1'
-default['pio']['hbase']['checksum'] = '4b56f7c7c45eab47090b65e6d401212e1b41eacedae2732dff0231325432171a'
+default['pio']['hbase']['version']  = '1.4.3'
+default['pio']['hbase']['checksum'] = '79beb9cfd95f6af69e97341b65c9be33e213a1fb39d23bacabf792265951f9f2'
 default['pio']['hbase']['archive']  = "hbase-#{node['pio']['hbase']['version']}-bin.tar.gz"
 default['pio']['hbase']['nofile']   = node['pio']['ulimit_nofile'].to_s
 
