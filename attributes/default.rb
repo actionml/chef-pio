@@ -17,12 +17,17 @@ default['pio']['apache_mirror'] = 'http://apache.mirrors.tds.net'
 default['pio']['user'] = 'aml'
 # default['pio']['home'] =
 
-######
-# PIO git repository and revision
+###########################
+# PredictionIO distribution
 #
-default['pio']['giturl'] = 'https://github.com/apache/incubator-predictionio.git'
-default['pio']['gitrev'] = 'v0.12.0-incubating'
-default['pio']['gitupdate'] = true
+default['pio']['pio']['version']  = '0.12.1'
+default['pio']['pio']['checksum'] = 'a939f1679c21d70eedab4cd30fe4f10cd5efec1128f7ada7f0bead3599d46676'
+default['pio']['pio']['archive']  = "apache-predictionio-#{node['pio']['pio']['version']}-bin.tar.gz"
+default['pio']['pio']['nofile']   = node['pio']['ulimit_nofile'].to_s
+default['pio']['pio']['url'] =
+  File.join(node['pio']['apache_mirror'], 'predictionio',
+            node['pio']['pio']['version'],
+            node['pio']['pio']['archive']).to_s
 
 # pio pip package
 default['pio']['pip_package_version'] = '0.9.8'

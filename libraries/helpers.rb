@@ -63,10 +63,6 @@ module PIOCookbook
       node['pio']['provision_only']
     end
 
-    def pio_version
-      node['pio']['gitrev'].sub(/^v/, '')
-    end
-
     def service_actions
       provision_only? ? [:enable] : [:enable, :start]
     end

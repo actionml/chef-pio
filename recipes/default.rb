@@ -24,61 +24,59 @@ include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
 include_recipe 'pio::python_modules'
 
-#######################
-# Install and build PIO
-#######################
+######################
+# Install PredictionIO
+######################
 
-# pio git source directory
-directory "#{localdir}/src/PredictionIO" do
-  user node['pio']['user']
-  group node['pio']['user']
-end
+apache_app 'PredictionIO' do
+  app 'pio'
+  dirowner node['pio']['user']
+  dirgroup node['pio']['user']
 
-# fetch pio git source
-git "#{localdir}/src/PredictionIO" do
-  repository node['pio']['giturl']
-  revision   node['pio']['gitrev']
+  templates %w[
+    conf/pio-env.sh
+  ]
 
-  user node['pio']['user']
-  group node['pio']['user']
-
-  action(node['pio']['gitupdate'] ? :sync : :checkout)
-end
-
-# make distribution (runs sbt built)
-execute './make-distribution.sh' do
-  cwd "#{localdir}/src/PredictionIO"
-  command 'bash ./make-distribution.sh'
-
-  user node['pio']['user']
-  group node['pio']['user']
-
-  subscribes :run, "git[#{localdir}/src/PredictionIO]",
-             :immediately
-
-  environment('HOME' => pio_home)
-  creates "#{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz"
-
-  action :nothing
-end
-
-# copy the built pio distribution
-execute 'untar pio artifact' do
-  cwd localdir
-  command "tar xzf #{localdir}/src/PredictionIO/PredictionIO-#{pio_version}.tar.gz"
-
-  subscribes :run, 'execute[./make-distribution.sh]', :immediately
-  action :nothing
-end
-
-# populate links to pio application directory
-link "#{localdir}/pio" do
-  to "#{localdir}/PredictionIO-#{pio_version}"
+  variables(
+    default_variables.merge(
+      version: node['pio']['pio']['version'],
+      es_clustername: node['pio']['conf']['es_clustername'],
+      es_hosts: Array(node['pio']['conf']['es_hosts']),
+      es_ports: Array(node['pio']['conf']['es_ports'])
+    )
+  )
 end
 
 link "#{pio_home}/pio" do
   to "#{localdir}/pio"
 end
+
+#############################################################
+# Write Hadoop and HBase configuration files for PredictionIO
+#############################################################
+
+# Create pio config directories for  services: hadoop and hbase
+%w[
+  hadoop
+  hbase
+]
+  .each do |app|
+    directory "#{localdir}/pio/conf/#{app}"
+  end
+
+# generate hadoop/hbase config files for pio
+%w[
+  hadoop/core-site.xml
+  hbase/hbase-site.xml
+]
+  .each do |path|
+    template "#{localdir}/pio/conf/#{path}" do
+      source "#{::File.basename(path)}.erb"
+      mode '0644'
+
+      variables(default_variables)
+    end
+  end
 
 ##########################
 # Install and build Mahout
@@ -167,51 +165,6 @@ edit_file 'replace resolvers' do
 
   action :replace_lines
 end
-
-###############################
-# Write PIO configuration files
-###############################
-
-# Create pio config directories for  services: hadoop and hbase
-%w[
-  hadoop
-  hbase
-]
-  .each do |app|
-    directory "#{localdir}/pio/conf/#{app}"
-  end
-
-# generate pio-env.sh
-template 'pio-env.sh' do
-  path   "#{localdir}/pio/conf/pio-env.sh"
-  source 'pio-env.sh.erb'
-  mode   0_644
-
-  variables(
-    default_variables.merge(
-      version: pio_version,
-      es_clustername: node['pio']['conf']['es_clustername'],
-      es_hosts: Array(node['pio']['conf']['es_hosts']),
-      es_ports: Array(node['pio']['conf']['es_ports'])
-    )
-  )
-
-  action :create
-end
-
-# generate hadoop/hbase config files for pio
-%w[
-  hadoop/core-site.xml
-  hbase/hbase-site.xml
-]
-  .each do |path|
-    template "#{localdir}/pio/conf/#{path}" do
-      source "#{::File.basename(path)}.erb"
-      mode '0644'
-
-      variables(default_variables)
-    end
-  end
 
 ##############################################
 # Start PIO Event Server on production systems
