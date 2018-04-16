@@ -18,6 +18,7 @@
         <value>hdfs://<%= node['pio']['conf']['namenode_host'] %>:<%= node['pio']['conf']['namenode_port'] %>/hbase</value>
     </property>
 
+<% unless node.recipe?('pio::aio') -%>
     <property>
         <name>hbase.zookeeper.property.clientPort</name>
         <value><%= node['pio']['conf']['zookeeper_port'] %></value>
@@ -27,8 +28,9 @@
         <name>hbase.zookeeper.quorum</name>
         <value><%= Array(node['pio']['conf']['zookeeper_hosts']).join(',') %></value>
     </property>
+<% end -%>
 
-    <!-- Hartonoworks best practices -->
+    <!-- Hortonworks best practices -->
     <property>
         <name>hbase.rpc.timeout</name>
         <value>300000</value>
