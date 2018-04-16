@@ -28,7 +28,8 @@ end
 
 # Install python runtime
 pyruntime = python_runtime '3' do
-  pip_version true
+  # See https://github.com/poise/poise-python/issues/107
+  pip_version '9.0.3'
 end
 
 ## Enable python from SCL for the pio user (on RHEL based systems)
