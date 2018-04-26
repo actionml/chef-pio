@@ -14,11 +14,12 @@ dfs() {
 #
 
 # 1. wait for hadoop
-retries=2
+retries=5
 while [ $retries -gt 0 ]; do
   dfs -ls / 1>/dev/null 2>&1
   [ $? -ne 0 ] || break
   retries=$((retries-1))
+  sleep 1
 done
 
 # 2. fail if no hadoop running
