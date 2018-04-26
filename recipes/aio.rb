@@ -18,12 +18,9 @@
 include_recipe 'pio::default'
 include_recipe 'pio::elasticsearch'
 
-################################################################################
-#                      Install all PIO stack services
-
-######################
-# Hadoop, HBase, Spark
-######################
+##################################################
+# Install PIO data backend services: Hadoop, HBase
+##################################################
 
 apache_app 'hadoop' do
   datasubdirs %w[tmp dfs dfs/name dfs/sname dfs/data1]
@@ -46,20 +43,6 @@ apache_app 'hbase' do
     conf/hbase-site.xml
   ]
 end
-
-apache_app 'spark' do
-  datasubdirs %w[logs work]
-  dirowner 'aml'
-  dirgroup 'hadoop'
-
-  templates %w[
-    conf/spark-env.sh
-    conf/spark-defaults.conf
-  ]
-end
-
-################################################################################
-#                      Bring up PIO stack services
 
 include_recipe 'pio::services'
 include_recipe 'pio::bootstrap_hdfs'

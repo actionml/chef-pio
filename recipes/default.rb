@@ -24,6 +24,25 @@ include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
 include_recipe 'pio::python_modules'
 
+####################################################
+# Install Spark cluster computing framework.
+# (the code is required to be present by PIO and UR)
+####################################################
+
+apache_app 'spark' do
+  datasubdirs %w[logs work]
+  dirowner 'aml'
+  dirgroup 'hadoop'
+
+  templates %w[
+    conf/spark-env.sh
+    conf/spark-defaults.conf
+  ]
+
+  files %w[sbin/start-spark.sh]
+  files_mode 0_755
+end
+
 ######################
 # Install PredictionIO
 ######################

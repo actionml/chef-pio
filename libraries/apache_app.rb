@@ -22,17 +22,24 @@ module PIOCookbook
     property :dirgroup,  String, default: 'root'
     property :dirmode,   [Integer, String], default: 0_750
 
+    # owner, group, mode for templates
     property :owner, String, default: 'root'
     property :group, String, default: 'root'
     property :mode, [Integer, String], default: 0_644
+
+    # owner, group, mode for files
+    property :files_owner, String, default: 'root'
+    property :files_group, String, default: 'root'
+    property :files_mode, [Integer, String], default: 0_644
 
     property :version,   String
     property :checksum,  String
     property :url,       String
     property :cookbook,  String
 
+    property :files, Array, default: []
     property :templates, Array, default: []
-    property :variables, Hash,  default: {}
+    property :variables, Hash, default: {}
 
     default_action :setup
 
@@ -56,11 +63,11 @@ module PIOCookbook
       @datadir ||= ::File.join(node['pio']['datadir'], app)
     end
 
-    def template_name(template_path)
-      "#{::File.basename(template_path)}.erb"
+    def file_sourcename(file_path)
+      ::File.basename(file_path)
     end
 
-    def template_dest(template_path)
+    def file_destpath(template_path)
       ::File.join(predefined[:appdir], template_path)
     end
 
@@ -102,11 +109,23 @@ module PIOCookbook
         end
       end
 
-      # Generate
+      # Generate files
+      new_resource.files.each do |file_path|
+        cookbook_file '/var/www/customers/public_html/index.php' do
+          source   file_sourcename(file_path)
+          path     file_destpath(file_path)
+
+          owner    new_resource.files_owner
+          group    new_resource.files_group
+          mode     new_resource.files_mode
+        end
+      end
+
+      # Generate templates
       new_resource.templates.each do |template_path|
         template template_path do
-          source   template_name(template_path)
-          path     template_dest(template_path)
+          source   file_sourcename("#{template_path}.erb")
+          path     file_destpath(template_path)
 
           owner    new_resource.owner
           group    new_resource.group
