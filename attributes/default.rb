@@ -36,14 +36,8 @@ default['pio']['pip_package_version'] = '0.9.8'
 # Universal recommender defaults
 #
 default['pio']['ur']['giturl'] = 'https://github.com/actionml/universal-recommender.git'
-default['pio']['ur']['gitrev'] = '0.7.0'
+default['pio']['ur']['gitrev'] = '0.7.1'
 default['pio']['ur']['gitupdate'] = true
-
-## Mahout defaults
-#
-default['pio']['mahout']['giturl'] = 'https://github.com/actionml/mahout.git'
-default['pio']['mahout']['gitrev'] = 'sparse-speedup-13.0'
-default['pio']['mahout']['gitupdate'] = true
 
 ################
 # Scala defaults
