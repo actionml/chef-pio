@@ -24,6 +24,25 @@ include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
 include_recipe 'pio::python_modules'
 
+####################################################
+# Install Spark cluster computing framework.
+# (the code is required to be present by PIO and UR)
+####################################################
+
+apache_app 'spark' do
+  datasubdirs %w[logs work]
+  dirowner 'aml'
+  dirgroup 'hadoop'
+
+  templates %w[
+    conf/spark-env.sh
+    conf/spark-defaults.conf
+  ]
+
+  files %w[sbin/start-spark.sh]
+  files_mode 0_755
+end
+
 ######################
 # Install PredictionIO
 ######################
@@ -78,51 +97,6 @@ end
     end
   end
 
-##########################
-# Install and build Mahout
-##########################
-
-# Custom mahout repo to assist broken SBT build
-directory ::File.dirname(default_variables[:mahout_repo])
-directory default_variables[:mahout_repo] do
-  user node['pio']['user']
-  group node['pio']['user']
-end
-
-# mahout git source directory
-directory "#{localdir}/src/mahout" do
-  user node['pio']['user']
-  group node['pio']['user']
-end
-
-# clone mahout repository
-git "#{localdir}/src/mahout" do
-  repository node['pio']['mahout']['giturl']
-  revision node['pio']['mahout']['gitrev']
-
-  user node['pio']['user']
-  group node['pio']['user']
-
-  action(node['pio']['mahout']['gitupdate'] ? :sync : :checkout)
-end
-
-execute 'build mahout' do
-  cwd "#{localdir}/src/mahout"
-
-  user node['pio']['user']
-  group node['pio']['user']
-
-  environment(
-    'HADOOP_HOME'   => default_variables[:hadoopdir],
-    'SPARK_VERSION' => node['pio']['spark']['version'],
-    'SCALA_VERSION' => node['pio']['scala']['version']
-  )
-  command 'make build deploy'
-
-  subscribes :run, "git[#{localdir}/src/mahout]"
-  action :nothing
-end
-
 ###############################
 # Install Universal Recommender
 ###############################
@@ -150,20 +124,6 @@ end
 
 link "#{pio_home}/ur" do
   to "#{localdir}/universal-recommender"
-end
-
-## Fix build.sbt!
-#
-edit_file 'replace resolvers' do
-  path    "#{localdir}/universal-recommender/build.sbt"
-
-  # init vars before content
-  variables(default_variables)
-  content %(resolvers += "Local Repository" at "file://#{variables[:mahout_repo]}")
-
-  regex(/resolvers +\+= +"Local Repository"/)
-
-  action :replace_lines
 end
 
 ##############################################
