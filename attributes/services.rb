@@ -31,7 +31,7 @@ default['pio']['hbase']['url'] =
 default['pio']['spark']['version']  = '2.1.2'
 default['pio']['spark']['checksum'] = '108d924b5e979e41b4e72dcc8bb1a185769378900d0215f9dd926eebd1ea7e39'
 default['pio']['spark']['basename'] = "spark-#{node['pio']['spark']['version']}"
-default['pio']['spark']['archive']  = "#{node['pio']['spark']['basename']}-bin-without-hadoop.tgz"
+default['pio']['spark']['archive']  = "#{node['pio']['spark']['basename']}-bin-hadoop2.7.tgz"
 default['pio']['spark']['nofile']   = node['pio']['ulimit_nofile'].to_s
 
 default['pio']['spark']['url'] =
