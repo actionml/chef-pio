@@ -11,10 +11,11 @@ limit nofile <%= @nofile %> <%= @nofile %>
 
 env JAVA_HOME=<%= @java_home %>
 env PIO_LOG_DIR<%= @logdir %>
+env=PIO_EVENTSERVER_PORT=7070
 
 script
-    # source default daemon settings
+    # source default daemon settings (overrides the defaults from this unit)
     . <%= @environment_file %>
 
-    exec <%= @piodir %>/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
+    exec <%= @appdir %>/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
 end script

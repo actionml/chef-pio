@@ -6,9 +6,10 @@ After=syslog.target network.target
 User=<%= @user %>
 Group=<%= @group %>
 Environment=JAVA_HOME=<%= @java_home %>
+Environment=PIO_EVENTSERVER_PORT=7070
 EnvironmentFile=-<%= @environment_file %>
 LimitNOFILE=<%= @nofile %>
-ExecStart=<%= @piodir %>/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
+ExecStart=<%= @appdir %>/bin/pio eventserver --port $PIO_EVENTSERVER_PORT
 
 [Install]
 WantedBy=multi-user.target

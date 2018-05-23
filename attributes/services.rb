@@ -1,8 +1,8 @@
 ########
 # Hadoop
 #
-default['pio']['hadoop']['version']  = '2.8.3'
-default['pio']['hadoop']['checksum'] = 'e8bf9a53337b1dca3b152b0a5b5e277dc734e76520543e525c301a050bb27eae'
+default['pio']['hadoop']['version']  = '2.8.4'
+default['pio']['hadoop']['checksum'] = '6b545972fdd73173887cdbc3e1cbd3cc72068271924edea82a0e7e653199b115'
 default['pio']['hadoop']['basename'] = "hadoop-#{node['pio']['hadoop']['version']}"
 default['pio']['hadoop']['archive']  = "#{node['pio']['hadoop']['basename']}.tar.gz"
 default['pio']['hadoop']['nofile']   = node['pio']['ulimit_nofile'].to_s

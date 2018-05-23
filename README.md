@@ -14,7 +14,7 @@ The second variant is **AIO** installs and sets the system up with all the requi
 * PredictionIO - 0.12.1
 * Universal Recommender - 0.7.1
 * OpenJDK8
-* Hadoop - 2.8.3
+* Hadoop - 2.8.4
 * HBase - 1.4.3
 * Spark - 2.1.2
 * ElasticSearch - 5.X
@@ -37,7 +37,6 @@ This cookbooks contains quite a long list of attributes, we won't try to cover a
 | **pio.localdir** | Directory containing all the installed applications and services. | `'/usr/local'` |
 | **pio.datadir** | Directory used as the top data store for all the installed services. | `'/opt/data'` |
 | **pio.git\*** | Attributes setting the pio Git source location and version. |
-| **pio.mahout.git\*** | Attributes setting the Mahout Git source location and version. |
 | **pio.ur.git\*** | Attributes setting the Universal Recommender Git source location and version. |
 | **pio.conf.event_server** | Specifies the PredictionIO Event Server port. | `7070` |
 | **pio.conf.prediction_server** | Specifies the PredictionIO Prediction Server port. | `8000` |

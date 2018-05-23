@@ -2,8 +2,8 @@
 #  For details refer to (https://github.com/apache/spark/blob/branch-2.1/conf/spark-env.sh.template)
 
 # Set hadoop configuration path and provide CLASSPATH
-HADOOP_CONF_DIR=<%= @localdir %>/hadoop/etc/hadoop
-SPARK_DIST_CLASSPATH=$(<%= @localdir %>/hadoop/bin/hadoop classpath)
+HADOOP_CONF_DIR=<%= @hadoopdir %>/etc/hadoop
+SPARK_DIST_CLASSPATH=$(<%= @hadoopdir %>/bin/hadoop classpath)
 
 # Setting runtime directories paths both for AIO and standalone,
 # since /usr/local/spark is read-only
@@ -11,4 +11,4 @@ SPARK_LOG_DIR=<%= @datadir %>/logs
 SPARK_WORKER_DIR=<%= @datadir %>/work
 
 # Provides path hadoop native libraries to load
-SPARK_DAEMON_JAVA_OPTS="-Djava.library.path=<%= @localdir %>/hadoop/lib/native"
+SPARK_DAEMON_JAVA_OPTS="-Djava.library.path=<%= @hadoopdir %>/lib/native"

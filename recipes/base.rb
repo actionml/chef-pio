@@ -56,6 +56,12 @@ end
   end
 end
 
+## Temporary directory (world-writable)
+#
+directory "#{node['pio']['datadir']}/tmp" do
+  mode 1_777
+end
+
 ## Create real home directory for PIO user
 #
 directory pio_homedir do

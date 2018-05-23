@@ -18,16 +18,29 @@ include_recipe 'git'
 include_recipe 'apt'
 include_recipe 'java'
 include_recipe 'rng-tools'
-include_recipe 'chef-maven'
+include_recipe 'maven'
 
 include_recipe 'pio::base'
 include_recipe 'pio::bash_helpers'
 include_recipe 'pio::python_modules'
 
-####################################################
-# Install Spark cluster computing framework.
-# (the code is required to be present by PIO and UR)
-####################################################
+###################################################################
+# Install Hadoop and Spark
+# (these are core parts and some of their binaries used by PIO & UR
+###################################################################
+
+apache_app 'hadoop' do
+  datasubdirs %w[tmp dfs dfs/name dfs/sname dfs/data1]
+  dirowner 'hadoop'
+  dirgroup 'hadoop'
+
+  templates %w[
+    etc/hadoop/core-site.xml
+    etc/hadoop/hdfs-site.xml
+  ]
+
+  variables(default_variables)
+end
 
 apache_app 'spark' do
   datasubdirs %w[logs work]
@@ -38,6 +51,8 @@ apache_app 'spark' do
     conf/spark-env.sh
     conf/spark-defaults.conf
   ]
+
+  variables(default_variables)
 
   files %w[sbin/start-spark.sh]
   files_mode 0_755
@@ -164,7 +179,7 @@ unless node.recipe?('pio::aio')
 
     # set vars before, since we use it in interpolation
     variables(
-      apache_vars.merge(
+      apache_vars(
         app: 'pio',
         environment_file: environment_file,
         logdir: '/var/log/eventserver'
