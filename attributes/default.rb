@@ -20,7 +20,13 @@ default['pio']['user'] = 'aml'
 ###########################
 # PredictionIO distribution
 #
-default['pio']['pio']['version']  = '0.12.1'
+default['pio']['pio']['install_method'] = 'binary'
+
+default['pio']['pio']['source']['giturl'] = 'https://github.com/apache/predictionio.git'
+default['pio']['pio']['source']['gitrev'] = 'release/0.12.1'
+default['pio']['pio']['source']['gitupdate'] = true
+
+default['pio']['pio']['version'] = '0.12.1'
 default['pio']['pio']['checksum'] = 'a939f1679c21d70eedab4cd30fe4f10cd5efec1128f7ada7f0bead3599d46676'
 default['pio']['pio']['archive']  = "apache-predictionio-#{node['pio']['pio']['version']}-bin.tar.gz"
 default['pio']['pio']['nofile']   = node['pio']['ulimit_nofile'].to_s

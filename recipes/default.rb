@@ -11,79 +11,13 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 #
-# Standalone PIO installation
+# Standalone PIO machine setup
 #
 
-include_recipe 'git'
-include_recipe 'apt'
-include_recipe 'java'
-include_recipe 'rng-tools'
-include_recipe 'maven'
-
-include_recipe 'pio::base'
-include_recipe 'pio::bash_helpers'
-include_recipe 'pio::python_modules'
-
-###################################################################
-# Install Hadoop and Spark
-# (these are core parts and some of their binaries used by PIO & UR
-###################################################################
-
-apache_app 'hadoop' do
-  datasubdirs %w[tmp dfs dfs/name dfs/sname dfs/data1]
-  dirowner 'hadoop'
-  dirgroup 'hadoop'
-
-  templates %w[
-    etc/hadoop/core-site.xml
-    etc/hadoop/hdfs-site.xml
-  ]
-
-  variables(default_variables)
-end
-
-apache_app 'spark' do
-  datasubdirs %w[logs work]
-  dirowner 'aml'
-  dirgroup 'hadoop'
-
-  templates %w[
-    conf/spark-env.sh
-    conf/spark-defaults.conf
-  ]
-
-  variables(default_variables)
-
-  files %w[sbin/start-spark.sh]
-  files_mode 0_755
-end
-
-######################
-# Install PredictionIO
-######################
-
-apache_app 'PredictionIO' do
-  app 'pio'
-  dirowner node['pio']['user']
-  dirgroup node['pio']['user']
-
-  templates %w[
-    conf/pio-env.sh
-  ]
-
-  variables(
-    default_variables.merge(
-      version: node['pio']['pio']['version'],
-      es_clustername: node['pio']['conf']['es_clustername'],
-      es_hosts: Array(node['pio']['conf']['es_hosts']),
-      es_ports: Array(node['pio']['conf']['es_ports'])
-    )
-  )
-end
-
-link "#{pio_home}/pio" do
-  to "#{localdir}/pio"
-end
+########################
+### Install PredictionIO
+########################
+include_recipe 'pio::pio'
 
 #############################################################
 # Write Hadoop and HBase configuration files for PredictionIO
@@ -193,6 +127,7 @@ unless node.recipe?('pio::aio')
     )
 
     subscribes :restart, 'template[eventserver.default]' unless provision_only?
+    subscribes :restart, 'template[conf/pio-env.sh]' unless provision_only?
 
     manager node['pio']['service_manager']
     action service_actions

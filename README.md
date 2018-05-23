@@ -1,4 +1,3 @@
-
 [![Travis](https://img.shields.io/travis/actionml/chef-pio.svg)](https://travis-ci.org/actionml/chef-pio)
 
 # PredictionIO chef cookbook
@@ -36,7 +35,7 @@ This cookbooks contains quite a long list of attributes, we won't try to cover a
 | **pio.home** | PIO user's home directory. Specify to change the default (`/opt/data/aml-home` which is symlinked to `/home/aml`).  | `''` |
 | **pio.localdir** | Directory containing all the installed applications and services. | `'/usr/local'` |
 | **pio.datadir** | Directory used as the top data store for all the installed services. | `'/opt/data'` |
-| **pio.git\*** | Attributes setting the pio Git source location and version. |
+| **pio.pio.install_method** | Specifies PredictionIO installation method (either `binary` `source`) | `'source'` |
 | **pio.ur.git\*** | Attributes setting the Universal Recommender Git source location and version. |
 | **pio.conf.event_server** | Specifies the PredictionIO Event Server port. | `7070` |
 | **pio.conf.prediction_server** | Specifies the PredictionIO Prediction Server port. | `8000` |
