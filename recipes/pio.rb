@@ -43,7 +43,7 @@ apache_app 'hadoop' do
 end
 
 apache_app 'spark' do
-  datasubdirs %w[logs work]
+  datasubdirs %w[logs work tmp]
   dirowner 'aml'
   dirgroup 'hadoop'
 
