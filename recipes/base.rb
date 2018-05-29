@@ -56,10 +56,11 @@ end
   end
 end
 
-## Temporary directory (world-writable)
+## Temporary directory (world-writable). Not used by any components,
+#  but rather intended for auxiliary needs.
 #
 directory "#{node['pio']['datadir']}/tmp" do
-  mode 1_777
+  mode 0_1777
 end
 
 ## Create real home directory for PIO user
