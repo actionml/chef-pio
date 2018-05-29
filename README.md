@@ -14,7 +14,7 @@ The second variant is **AIO** installs and sets the system up with all the requi
 * Universal Recommender - 0.7.1
 * OpenJDK8
 * Hadoop - 2.8.4
-* HBase - 1.4.3
+* HBase - 1.4.4
 * Spark - 2.1.2
 * ElasticSearch - 5.X
 
