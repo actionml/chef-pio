@@ -46,7 +46,6 @@ edit_file 'PIO apps homes' do
     HADOOP_HOME=#{localdir}/hadoop
     HBASE_HOME=#{localdir}/hbase
     SPARK_HOME=#{localdir}/spark
-    MAHOUT_HOME=#{localdir}/mahout
   EHD
 
   action :insert

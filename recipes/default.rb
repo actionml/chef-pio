@@ -11,64 +11,13 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 
 #
-# Standalone PIO installation
+# Standalone PIO machine setup
 #
 
-include_recipe 'git'
-include_recipe 'apt'
-include_recipe 'java'
-include_recipe 'rng-tools'
-include_recipe 'chef-maven'
-
-include_recipe 'pio::base'
-include_recipe 'pio::bash_helpers'
-include_recipe 'pio::python_modules'
-
-####################################################
-# Install Spark cluster computing framework.
-# (the code is required to be present by PIO and UR)
-####################################################
-
-apache_app 'spark' do
-  datasubdirs %w[logs work]
-  dirowner 'aml'
-  dirgroup 'hadoop'
-
-  templates %w[
-    conf/spark-env.sh
-    conf/spark-defaults.conf
-  ]
-
-  files %w[sbin/start-spark.sh]
-  files_mode 0_755
-end
-
-######################
-# Install PredictionIO
-######################
-
-apache_app 'PredictionIO' do
-  app 'pio'
-  dirowner node['pio']['user']
-  dirgroup node['pio']['user']
-
-  templates %w[
-    conf/pio-env.sh
-  ]
-
-  variables(
-    default_variables.merge(
-      version: node['pio']['pio']['version'],
-      es_clustername: node['pio']['conf']['es_clustername'],
-      es_hosts: Array(node['pio']['conf']['es_hosts']),
-      es_ports: Array(node['pio']['conf']['es_ports'])
-    )
-  )
-end
-
-link "#{pio_home}/pio" do
-  to "#{localdir}/pio"
-end
+########################
+### Install PredictionIO
+########################
+include_recipe 'pio::pio'
 
 #############################################################
 # Write Hadoop and HBase configuration files for PredictionIO
@@ -126,60 +75,60 @@ link "#{pio_home}/ur" do
   to "#{localdir}/universal-recommender"
 end
 
-##############################################
-# Start PIO Event Server on production systems
-##############################################
+########################
+# Start PIO Event Server
+########################
 
-unless node.recipe?('pio::aio')
-  environment_file =
-    value_for_platform_family(
-      'debian' => '/etc/default/pio',
-      'rhel'   => '/etc/sysconfig/pio'
+environment_file =
+  value_for_platform_family(
+    'debian' => '/etc/default/pio',
+    'rhel'   => '/etc/sysconfig/pio'
+  )
+
+# Create eventserver log directory
+directory '/var/log/eventserver' do
+  user node['pio']['user']
+  group node['pio']['user']
+  mode '0755'
+  action :create
+end
+
+# Generate default config
+template 'pio.default' do
+  source 'services/pio.default.erb'
+  path environment_file
+  variables(
+    eventserver_port: node['pio']['conf']['eventserver_port'],
+    predictionserver_port: node['pio']['conf']['predictionserver_port']
+  )
+  mode 0_644
+end
+
+# EventServer service
+service_manager 'eventserver' do
+  supports status: true, reload: false
+  user  'aml'
+  group 'hadoop'
+
+  # set vars before, since we use it in interpolation
+  variables(
+    apache_vars(
+      app: 'pio',
+      environment_file: environment_file,
+      logdir: '/var/log/eventserver'
     )
+  )
 
-  # Create eventserver log directory
-  directory '/var/log/eventserver' do
-    user node['pio']['user']
-    group node['pio']['user']
-    mode '0755'
-    action :create
-  end
+  exec_command "#{variables[:piodir]}/bin/pio eventserver"
+  exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
+  exec_env(
+    'PIO_LOG_DIR' => variables[:logdir]
+  )
 
-  # Generate default config
-  template 'pio.default' do
-    source 'services/pio.default.erb'
-    path environment_file
-    variables(
-      eventserver_port: node['pio']['conf']['eventserver_port'],
-      predictionserver_port: node['pio']['conf']['predictionserver_port']
-    )
-    mode 0_644
-  end
+  subscribes :restart, 'template[eventserver.default]' unless provision_only?
+  subscribes :restart, 'template[conf/pio-env.sh]' unless provision_only?
 
-  # EventServer service
-  service_manager 'eventserver' do
-    supports status: true, reload: false
-    user  'aml'
-    group 'hadoop'
+  manager node['pio']['service_manager']
 
-    # set vars before, since we use it in interpolation
-    variables(
-      apache_vars.merge(
-        app: 'pio',
-        environment_file: environment_file,
-        logdir: '/var/log/eventserver'
-      )
-    )
-
-    exec_command "#{variables[:piodir]}/bin/pio eventserver"
-    exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
-    exec_env(
-      'PIO_LOG_DIR' => variables[:logdir]
-    )
-
-    subscribes :restart, 'template[eventserver.default]' unless provision_only?
-
-    manager node['pio']['service_manager']
-    action service_actions
-  end
+  action :enable
 end

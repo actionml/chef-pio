@@ -18,20 +18,9 @@
 include_recipe 'pio::default'
 include_recipe 'pio::elasticsearch'
 
-##################################################
-# Install PIO data backend services: Hadoop, HBase
-##################################################
-
-apache_app 'hadoop' do
-  datasubdirs %w[tmp dfs dfs/name dfs/sname dfs/data1]
-  dirowner 'hadoop'
-  dirgroup 'hadoop'
-
-  templates %w[
-    etc/hadoop/core-site.xml
-    etc/hadoop/hdfs-site.xml
-  ]
-end
+###########################################################
+# Install HBase (Spark & Hadoop are part of the default.rb)
+###########################################################
 
 apache_app 'hbase' do
   datasubdirs %w[tmp logs]

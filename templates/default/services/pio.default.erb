@@ -2,15 +2,15 @@
 #
 
 <% if @eventserver_port.to_i != 7070 -%>
-PIO_EVENTSERVER_PORT=<%= @eventserver_port %>
+EVENTSERVER_PORT=<%= @eventserver_port %>
 <% else -%>
-## EventServer port uncomment and change the default value
-# PIO_EVENTSERVER_PORT= 7070
+## EventServer port, uncomment to change the default value
+# EVENTSERVER_PORT=7070
 <% end -%>
 
 <% if @predictionserver_port.to_i != 8080 -%>
-PIO_PREDICTIONSERVER_PORT=<%= @predictionserver_port %>
+PREDICTIONSERVER_PORT=<%= @predictionserver_port %>
 <% else -%>
 ## PredictionServer port uncomment and change the default value
-# PIO_PREDICTIONSERVER_PORT= 7070
+# PREDICTIONSERVER_PORT=7070
 <% end -%>

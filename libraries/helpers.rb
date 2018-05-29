@@ -29,6 +29,33 @@ module PIOCookbook
         end
     end
 
+    def pio_srcdir
+      @pio_srcdir ||= "#{node['pio']['localdir']}/src/pio"
+    end
+
+    # Method finds the pio dist version
+    def _grep_pio_distver
+      version = ::File.open("#{pio_srcdir}/build.sbt")
+                      .readlines.select { |l| l =~ /^version in ThisBuild/ }
+                      .pop.chomp
+
+      # extract the real version name
+      version.gsub!(/.*:=\s+"(.*)"/, '\1')
+    rescue SystemCallError
+      Chef::Log.error('method can be used ONLY after the build (make-distribution.sh)')
+      raise
+    end
+
+    # PredictionIO version
+    def pio_version
+      @pio_version ||= case node['pio']['pio']['install_method']
+                       when 'source'
+                         _grep_pio_distver
+                       when 'binary'
+                         node['pio']['pio']['version']
+                       end
+    end
+
     # data directory (default: /opt/data)
     def datadir
       @datadir ||= node['pio']['datadir']
@@ -48,8 +75,7 @@ module PIOCookbook
         hadoopdir: "#{localdir}/hadoop",
         nofile:    node['pio']['ulimit_nofile'],
         java_home: (node['java'] and node['java']['java_home']),
-        pio_home: pio_home,
-        mahout_repo: "#{localdir}/share/mahout-m2-repo"
+        pio_home: pio_home
       }
     end
 
