@@ -18,9 +18,9 @@
 include_recipe 'pio::default'
 include_recipe 'pio::elasticsearch'
 
-###########################################################
-# Install HBase (Spark & Hadoop are part of the default.rb)
-###########################################################
+##########################################################
+# Install HBase (Spark & Hadoop are installed in pio::pio)
+##########################################################
 
 apache_app 'hbase' do
   datasubdirs %w[tmp logs]
