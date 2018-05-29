@@ -75,61 +75,60 @@ link "#{pio_home}/ur" do
   to "#{localdir}/universal-recommender"
 end
 
-##############################################
-# Start PIO Event Server on production systems
-##############################################
+########################
+# Start PIO Event Server
+########################
 
-unless node.recipe?('pio::aio')
-  environment_file =
-    value_for_platform_family(
-      'debian' => '/etc/default/pio',
-      'rhel'   => '/etc/sysconfig/pio'
+environment_file =
+  value_for_platform_family(
+    'debian' => '/etc/default/pio',
+    'rhel'   => '/etc/sysconfig/pio'
+  )
+
+# Create eventserver log directory
+directory '/var/log/eventserver' do
+  user node['pio']['user']
+  group node['pio']['user']
+  mode '0755'
+  action :create
+end
+
+# Generate default config
+template 'pio.default' do
+  source 'services/pio.default.erb'
+  path environment_file
+  variables(
+    eventserver_port: node['pio']['conf']['eventserver_port'],
+    predictionserver_port: node['pio']['conf']['predictionserver_port']
+  )
+  mode 0_644
+end
+
+# EventServer service
+service_manager 'eventserver' do
+  supports status: true, reload: false
+  user  'aml'
+  group 'hadoop'
+
+  # set vars before, since we use it in interpolation
+  variables(
+    apache_vars(
+      app: 'pio',
+      environment_file: environment_file,
+      logdir: '/var/log/eventserver'
     )
+  )
 
-  # Create eventserver log directory
-  directory '/var/log/eventserver' do
-    user node['pio']['user']
-    group node['pio']['user']
-    mode '0755'
-    action :create
-  end
+  exec_command "#{variables[:piodir]}/bin/pio eventserver"
+  exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
+  exec_env(
+    'PIO_LOG_DIR' => variables[:logdir]
+  )
 
-  # Generate default config
-  template 'pio.default' do
-    source 'services/pio.default.erb'
-    path environment_file
-    variables(
-      eventserver_port: node['pio']['conf']['eventserver_port'],
-      predictionserver_port: node['pio']['conf']['predictionserver_port']
-    )
-    mode 0_644
-  end
+  subscribes :restart, 'template[eventserver.default]' unless provision_only?
+  subscribes :restart, 'template[conf/pio-env.sh]' unless provision_only?
 
-  # EventServer service
-  service_manager 'eventserver' do
-    supports status: true, reload: false
-    user  'aml'
-    group 'hadoop'
+  manager node['pio']['service_manager']
 
-    # set vars before, since we use it in interpolation
-    variables(
-      apache_vars(
-        app: 'pio',
-        environment_file: environment_file,
-        logdir: '/var/log/eventserver'
-      )
-    )
-
-    exec_command "#{variables[:piodir]}/bin/pio eventserver"
-    exec_procregex "#{variables[:piodir]}/assembly/pio-assembly.*"
-    exec_env(
-      'PIO_LOG_DIR' => variables[:logdir]
-    )
-
-    subscribes :restart, 'template[eventserver.default]' unless provision_only?
-    subscribes :restart, 'template[conf/pio-env.sh]' unless provision_only?
-
-    manager node['pio']['service_manager']
-    action service_actions
-  end
+  action :enable
 end
