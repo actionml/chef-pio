@@ -33,6 +33,7 @@ apache_app 'hadoop' do
   datasubdirs %w[tmp dfs dfs/name dfs/sname dfs/data1]
   dirowner 'hadoop'
   dirgroup 'hadoop'
+  dirmode 0_700
 
   templates %w[
     etc/hadoop/core-site.xml

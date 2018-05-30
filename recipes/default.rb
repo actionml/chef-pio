@@ -32,17 +32,19 @@ include_recipe 'pio::pio'
     directory "#{localdir}/pio/conf/#{app}"
   end
 
-# generate hadoop/hbase config files for pio
+# Links configuration files into pio/conf
 %w[
-  hadoop/core-site.xml
-  hbase/hbase-site.xml
+  hadoop/etc/hadoop/core-site.xml
+  hbase/conf/hbase-site.xml
 ]
   .each do |path|
-    template "#{localdir}/pio/conf/#{path}" do
-      source "#{::File.basename(path)}.erb"
-      mode '0644'
+    # convert first/XXX/last -> %w[first last]
+    parts = path.split('/')
+    parts.slice!(1..-2)
 
-      variables(default_variables)
+    link path do
+      target_file ::File.join(localdir, 'pio', 'conf', *parts)
+      to ::File.join(localdir, path)
     end
   end
 
