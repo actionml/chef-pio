@@ -11,7 +11,7 @@ The second variant is **AIO** installs and sets the system up with all the requi
 ## Current software versions
 
 * PredictionIO - 0.12.1
-* Universal Recommender - 0.7.1
+* Universal Recommender - 0.7.3
 * OpenJDK8
 * Hadoop - 2.8.4
 * HBase - 1.4.4
