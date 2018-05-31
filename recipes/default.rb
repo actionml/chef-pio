@@ -132,5 +132,6 @@ service_manager 'eventserver' do
 
   manager node['pio']['service_manager']
 
-  action :enable
+  # disable eventserver startup
+  action node.recipe?('pio::aio') ? :disable : :enable
 end
