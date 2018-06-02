@@ -23,6 +23,19 @@ include_recipe 'pio::pio'
 # Write Hadoop and HBase configuration files for PredictionIO
 #############################################################
 
+# create hbase configuration directory (on non-AIO machines)
+directory "#{localdir}/hbase/conf" do
+  recursive true
+  not_if { node.recipe? 'pio::aio' }
+end
+
+# write template since (hbase won't be install on non-AIO)
+template "#{localdir}/hbase/conf/hbase-site.xml" do
+  variables(default_variables)
+  notifies :restart, 'service_manager[eventserver]'
+  not_if { node.recipe? 'pio::aio' }
+end
+
 # Create pio config directories for  services: hadoop and hbase
 %w[
   hadoop

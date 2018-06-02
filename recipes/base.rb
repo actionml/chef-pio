@@ -56,8 +56,8 @@ end
   end
 end
 
-## Temporary directory (world-writable). Not used by any components,
-#  but rather intended for auxiliary needs.
+## Temporary directory (world-writable). Used as hbase.tmp.dir as well
+#  as used for auxiliary needs.
 #
 directory "#{node['pio']['datadir']}/tmp" do
   mode 0_1777
