@@ -66,13 +66,14 @@ end
 ###############################
 
 # UR git source directory
-directory "#{localdir}/src/universal-recommender" do
+
+directory "#{pio_home}/ur" do
   user node['pio']['user']
   group node['pio']['user']
 end
 
 # Clone pio repository
-git "#{localdir}/src/universal-recommender" do
+git "#{pio_home}/ur" do
   repository node['pio']['ur']['giturl']
   revision node['pio']['ur']['gitrev']
 
@@ -80,14 +81,6 @@ git "#{localdir}/src/universal-recommender" do
   group node['pio']['user']
 
   action(node['pio']['ur']['gitupdate'] ? :sync : :checkout)
-end
-
-link "#{localdir}/universal-recommender" do
-  to "#{localdir}/src/universal-recommender"
-end
-
-link "#{pio_home}/ur" do
-  to "#{localdir}/universal-recommender"
 end
 
 ########################
