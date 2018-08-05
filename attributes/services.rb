@@ -15,8 +15,8 @@ default['pio']['hadoop']['url'] =
 #######
 # HBase
 #
-default['pio']['hbase']['version']  = '1.4.4'
-default['pio']['hbase']['checksum'] = '545521212660c877623e91b669acdcbaaf3aceeb283f989b6e4d17fd5c698bd1'
+default['pio']['hbase']['version']  = '1.4.6'
+default['pio']['hbase']['checksum'] = '4b3769f7d2d829dc212b9ace36d83dd17d3e4f674d0cf39a7cdee1ae47e23d37'
 default['pio']['hbase']['archive']  = "hbase-#{node['pio']['hbase']['version']}-bin.tar.gz"
 default['pio']['hbase']['nofile']   = node['pio']['ulimit_nofile'].to_s
 
@@ -28,8 +28,8 @@ default['pio']['hbase']['url'] =
 #######
 # Spark
 #
-default['pio']['spark']['version']  = '2.1.2'
-default['pio']['spark']['checksum'] = '108d924b5e979e41b4e72dcc8bb1a185769378900d0215f9dd926eebd1ea7e39'
+default['pio']['spark']['version']  = '2.1.3'
+default['pio']['spark']['checksum'] = 'b489655c777c94e25425ce63f54046118f924e00e1630237a4b86018a098ab91'
 default['pio']['spark']['basename'] = "spark-#{node['pio']['spark']['version']}"
 default['pio']['spark']['archive']  = "#{node['pio']['spark']['basename']}-bin-without-hadoop.tgz"
 default['pio']['spark']['nofile']   = node['pio']['ulimit_nofile'].to_s

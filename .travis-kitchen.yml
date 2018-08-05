@@ -9,12 +9,12 @@ provisioner:
 platforms:
   - name: ubuntu-16.04
     driver_config:
-      image: ubuntu:16.04
+      image: ubuntu:18.04
       platform: ubuntu
       provision_command: apt-get -q install locales && locale-gen en_US.UTF-8
-  - name: centos-7.4
+  - name: centos-7
     driver_config:
-      image: centos:7.4.1708
+      image: centos:7
       platform: centos
 
 suites:
